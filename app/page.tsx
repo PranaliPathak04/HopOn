@@ -15,9 +15,15 @@ export default async function Home() {
         <div className="flex items-center gap-6 text-sm">
           {session?.user ? (
             <>
-              <span className="text-ink/70">
-                Hi, {session.user.name?.split(" ")[0]}
-              </span>
+              <Link href="/dashboard" className="text-ink/70 hover:text-ink">
+                Dashboard
+              </Link>
+              <Link
+                href="/publish"
+                className="rounded-xl bg-road px-4 py-1.5 font-display font-bold text-paper hover:bg-road-light"
+              >
+                + Publish ride
+              </Link>
               <SignOutButton />
             </>
           ) : (
