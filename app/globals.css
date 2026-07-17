@@ -1,26 +1,61 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-paper: #faf8f4;
+  --color-ink: #1b1a18;
+  --color-road: #243b53;
+  --color-road-light: #34526f;
+  --color-signal: #e8a33d;
+  --color-signal-dark: #c98527;
+  --color-lane: #7a8a99;
+  --color-lane-light: #d9dee3;
+  --color-success: #4c7a5d;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: var(--font-archivo), "Arial Narrow", sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Signature element: dashed route-line, used to visually connect
+   pickup -> destination anywhere we show a route, echoing a lane marking. */
+.route-line {
+  position: relative;
+  height: 1px;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--color-lane) 0,
+    var(--color-lane) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+}
+
+.route-line::before,
+.route-line::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  transform: translateY(-50%);
+}
+
+.route-line::before {
+  left: -2px;
+  background-color: var(--color-road);
+}
+
+.route-line::after {
+  right: -2px;
+  background-color: var(--color-signal);
 }

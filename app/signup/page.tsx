@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
@@ -44,23 +45,30 @@ export default function SignupPage() {
     <main className="flex min-h-screen items-center justify-center p-6">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-4 rounded-xl border border-gray-200 p-6 shadow-sm"
+        className="w-full max-w-sm space-y-4 rounded-2xl border border-lane-light bg-white p-7"
       >
-        <h1 className="text-2xl font-bold">Create your account</h1>
+        <Link href="/" className="font-display text-sm font-bold text-road">
+          ← HopOn
+        </Link>
+        <h1 className="font-display text-2xl font-extrabold text-ink">
+          Create your account
+        </h1>
 
         {error && (
-          <p className="rounded bg-red-50 p-2 text-sm text-red-700">{error}</p>
+          <p className="rounded-lg bg-red-50 p-2.5 text-sm text-red-700">
+            {error}
+          </p>
         )}
 
         <input
-          className="w-full rounded border border-gray-300 p-2"
+          className="w-full rounded-lg border border-lane-light p-2.5"
           placeholder="Full name"
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
           required
         />
         <input
-          className="w-full rounded border border-gray-300 p-2"
+          className="w-full rounded-lg border border-lane-light p-2.5"
           placeholder="Email"
           type="email"
           value={form.email}
@@ -68,14 +76,14 @@ export default function SignupPage() {
           required
         />
         <input
-          className="w-full rounded border border-gray-300 p-2"
+          className="w-full rounded-lg border border-lane-light p-2.5"
           placeholder="Phone"
           value={form.phone}
           onChange={(e) => setForm({ ...form, phone: e.target.value })}
           required
         />
         <input
-          className="w-full rounded border border-gray-300 p-2"
+          className="w-full rounded-lg border border-lane-light p-2.5"
           placeholder="Password (min 8 characters)"
           type="password"
           value={form.password}
@@ -86,16 +94,16 @@ export default function SignupPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded bg-black p-2 text-white disabled:opacity-50"
+          className="w-full rounded-xl bg-road py-2.5 font-display font-bold text-paper hover:bg-road-light disabled:opacity-50"
         >
           {loading ? "Creating account..." : "Sign up"}
         </button>
 
-        <p className="text-center text-sm text-gray-600">
+        <p className="text-center text-sm text-ink/60">
           Already have an account?{" "}
-          <a href="/login" className="underline">
+          <Link href="/login" className="font-semibold text-road underline">
             Log in
-          </a>
+          </Link>
         </p>
       </form>
     </main>
