@@ -11,9 +11,9 @@
   --color-ink-dim: #555555;
 
   /* Accent — electric green (movement, go, live) */
-  --color-go: #00e676;
-  --color-go-dark: #00c853;
-  --color-go-glow: rgba(0, 230, 118, 0.15);
+  --color-go: #fbbf24;
+  --color-go-dark: #f59e0b;
+  --color-go-glow: rgba(251, 191, 36, 0.15);
 
   /* Energy orange — for highlights, prices, urgency */
   --color-spark: #ff6b35;

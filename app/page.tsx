@@ -9,21 +9,24 @@ export default async function Home() {
   return (
     <main
       className="min-h-screen overflow-x-hidden"
-      style={{ background: "#0f0f0f", color: "#fff" }}
+      style={{ background: "var(--color-paper)", color: "var(--color-ink)" }}
     >
       {/* ── NAV ── */}
       <nav
         style={{
-          borderBottom: "1px solid #1f1f1f",
+          borderBottom: "1px solid var(--color-border)",
           background: "rgba(15,15,15,0.85)",
           backdropFilter: "blur(12px)",
         }}
         className="sticky top-0 z-50"
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-          <span className="font-display text-2xl font-extrabold tracking-tight">
-            Hop<span style={{ color: "#00e676" }}>On</span>
-          </span>
+          <div className="flex items-center gap-2">
+            <img src="/hopon-car.svg" alt="" width={36} height={32} />
+            <span className="font-display text-2xl font-extrabold tracking-tight">
+              Hop<span style={{ color: "var(--color-go)" }}>On</span>
+            </span>
+          </div>
 
           {/* Desktop */}
           <div className="hidden items-center gap-6 text-sm sm:flex">
@@ -31,14 +34,14 @@ export default async function Home() {
               <>
                 <Link
                   href="/search"
-                  style={{ color: "#a0a0a0" }}
+                  style={{ color: "var(--color-ink-muted)" }}
                   className="hover:text-white transition-colors"
                 >
                   Find a ride
                 </Link>
                 <Link
                   href="/dashboard"
-                  style={{ color: "#a0a0a0" }}
+                  style={{ color: "var(--color-ink-muted)" }}
                   className="hover:text-white transition-colors"
                 >
                   Dashboard
@@ -52,7 +55,7 @@ export default async function Home() {
               <>
                 <Link
                   href="/login"
-                  style={{ color: "#a0a0a0" }}
+                  style={{ color: "var(--color-ink-muted)" }}
                   className="hover:text-white transition-colors"
                 >
                   Log in
@@ -82,46 +85,20 @@ export default async function Home() {
       {/* ── HERO ── */}
       <section className="mx-auto max-w-6xl px-5 pt-20 pb-10 sm:pt-32 sm:pb-16">
         {/* Live badge */}
-        <div className="flex justify-center mb-8">
-          <span className="pill-go flex items-center gap-2 text-xs px-4 py-2">
-            <span
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "#00e676",
-                display: "inline-block",
-                boxShadow: "0 0 8px #00e676",
-                animation: "meetPulse 2s ease-in-out infinite",
-              }}
-            />
-            Rides live on your route right now
-          </span>
-        </div>
 
         {/* Big headline */}
         <h1
           className="text-center font-display font-extrabold leading-none tracking-tight"
           style={{ fontSize: "clamp(48px, 10vw, 96px)", lineHeight: 1.0 }}
         >
-          <span style={{ color: "#fff" }}>Share the</span>
+          <span style={{ color: "var(--color-ink)" }}>Share the</span>
           <br />
-          <span
-            style={{
-              background:
-                "linear-gradient(90deg, #00e676 0%, #69f0ae 50%, #00e676 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
-          >
-            road.
-          </span>
+          <span style={{ color: "var(--color-go)" }}>road.</span>
         </h1>
 
         <p
           className="mx-auto mt-6 max-w-lg text-center text-lg leading-relaxed"
-          style={{ color: "#a0a0a0" }}
+          style={{ color: "var(--color-ink-muted)" }}
         >
           HopOn matches your exact route with drivers already headed there — not
           just your city, your actual path. Split the cost, not your plans.
@@ -146,7 +123,7 @@ export default async function Home() {
         {/* Trust row */}
         <div
           className="mt-8 flex flex-wrap justify-center gap-5"
-          style={{ color: "#555" }}
+          style={{ color: "var(--color-ink-dim)" }}
         >
           {[
             "Route-level matching",
@@ -155,7 +132,7 @@ export default async function Home() {
             "No commission",
           ].map((t) => (
             <span key={t} className="flex items-center gap-2 text-xs">
-              <span style={{ color: "#00e676" }}>✓</span> {t}
+              <span style={{ color: "var(--color-go)" }}>✓</span> {t}
             </span>
           ))}
         </div>
@@ -165,7 +142,7 @@ export default async function Home() {
       <section className="mx-auto max-w-4xl px-5 py-6">
         <div
           className="card relative overflow-hidden px-8 py-10"
-          style={{ background: "#141414" }}
+          style={{ background: "var(--color-surface)" }}
         >
           {/* Glow behind */}
           <div
@@ -178,14 +155,14 @@ export default async function Home() {
               height: 200,
               borderRadius: "50%",
               background:
-                "radial-gradient(circle, rgba(0,230,118,0.08) 0%, transparent 70%)",
+                "radial-gradient(circle, var(--color-go-glow) 0%, transparent 70%)",
               pointerEvents: "none",
             }}
           />
 
           <div
             className="mb-5 flex items-center justify-between text-xs font-bold uppercase tracking-widest"
-            style={{ color: "#555" }}
+            style={{ color: "var(--color-ink-dim)" }}
           >
             <span>📍 Pickup</span>
             <span>Drop 📍</span>
@@ -204,7 +181,7 @@ export default async function Home() {
                 y1="28"
                 x2="800"
                 y2="28"
-                stroke="#2a2a2a"
+                stroke="var(--color-border)"
                 strokeWidth="2"
                 strokeDasharray="18 10"
               />
@@ -219,16 +196,16 @@ export default async function Home() {
                 width: 44,
                 height: 44,
                 borderRadius: "50%",
-                background: "#0f0f0f",
-                border: "2px solid #00e676",
-                boxShadow: "0 0 20px rgba(0,230,118,0.4)",
+                background: "var(--color-paper)",
+                border: "2px solid var(--color-go)",
+                boxShadow: "0 0 20px var(--color-go-glow)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 fontFamily: "var(--font-display)",
                 fontWeight: 800,
                 fontSize: 14,
-                color: "#00e676",
+                color: "var(--color-go)",
                 animation: "slideRight 2.5s ease-in-out infinite alternate",
               }}
             >
@@ -244,16 +221,16 @@ export default async function Home() {
                 width: 44,
                 height: 44,
                 borderRadius: "50%",
-                background: "#0f0f0f",
-                border: "2px solid #ff6b35",
-                boxShadow: "0 0 20px rgba(255,107,53,0.4)",
+                background: "var(--color-paper)",
+                border: "2px solid var(--color-signal)",
+                boxShadow: "0 0 20px var(--color-spark-glow)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 fontFamily: "var(--font-display)",
                 fontWeight: 800,
                 fontSize: 14,
-                color: "#ff6b35",
+                color: "var(--color-signal)",
                 animation: "slideLeft 2.5s ease-in-out infinite alternate",
               }}
             >
@@ -270,7 +247,7 @@ export default async function Home() {
                 width: 32,
                 height: 32,
                 borderRadius: "50%",
-                background: "rgba(0,230,118,0.25)",
+                background: "var(--color-go-glow)",
                 animation: "meetPulse 2.5s ease-in-out infinite",
               }}
             />
@@ -288,9 +265,9 @@ export default async function Home() {
                 key={c.label}
                 className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium"
                 style={{
-                  background: "#1f1f1f",
-                  border: "1px solid #2a2a2a",
-                  color: "#a0a0a0",
+                  background: "var(--color-surface-2)",
+                  border: "1px solid var(--color-border)",
+                  color: "var(--color-ink-muted)",
                 }}
               >
                 {c.icon} {c.label}
@@ -319,20 +296,23 @@ export default async function Home() {
               preview: (
                 <div
                   className="mt-4 rounded-2xl p-4 text-xs"
-                  style={{ background: "#111", border: "1px solid #222" }}
+                  style={{
+                    background: "var(--color-paper)",
+                    border: "1px solid var(--color-border)",
+                  }}
                 >
                   <div
                     className="flex items-center gap-2 mb-2"
-                    style={{ color: "#a0a0a0" }}
+                    style={{ color: "var(--color-ink-muted)" }}
                   >
                     <span
                       style={{
                         width: 8,
                         height: 8,
                         borderRadius: "50%",
-                        background: "#00e676",
+                        background: "var(--color-go)",
                         display: "inline-block",
-                        boxShadow: "0 0 6px #00e676",
+                        boxShadow: "0 0 6px var(--color-go)",
                         flexShrink: 0,
                       }}
                     />
@@ -342,23 +322,23 @@ export default async function Home() {
                     style={{
                       width: 1,
                       height: 16,
-                      background: "#2a2a2a",
+                      background: "var(--color-border)",
                       marginLeft: 3,
                       marginBottom: 2,
                     }}
                   />
                   <div
                     className="flex items-center gap-2"
-                    style={{ color: "#a0a0a0" }}
+                    style={{ color: "var(--color-ink-muted)" }}
                   >
                     <span
                       style={{
                         width: 8,
                         height: 8,
                         borderRadius: "50%",
-                        background: "#ff6b35",
+                        background: "var(--color-signal)",
                         display: "inline-block",
-                        boxShadow: "0 0 6px #ff6b35",
+                        boxShadow: "0 0 6px var(--color-signal)",
                         flexShrink: 0,
                       }}
                     />
@@ -375,23 +355,35 @@ export default async function Home() {
               preview: (
                 <div
                   className="mt-4 rounded-2xl p-4 text-xs"
-                  style={{ background: "#111", border: "1px solid #222" }}
+                  style={{
+                    background: "var(--color-paper)",
+                    border: "1px solid var(--color-border)",
+                  }}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div>
-                      <p className="font-bold text-white">Rahul M.</p>
-                      <p style={{ color: "#555" }}>Swift Dzire · White</p>
+                      <p
+                        className="font-bold"
+                        style={{ color: "var(--color-ink)" }}
+                      >
+                        Rahul M.
+                      </p>
+                      <p style={{ color: "var(--color-ink-dim)" }}>
+                        Swift Dzire · White
+                      </p>
                     </div>
                     <p
                       className="font-display font-extrabold text-base"
-                      style={{ color: "#00e676" }}
+                      style={{ color: "var(--color-go)" }}
                     >
                       ₹240
                     </p>
                   </div>
                   <div className="route-line my-2" />
                   <div className="flex items-center justify-between mt-2">
-                    <span style={{ color: "#555" }}>0.3 km away</span>
+                    <span style={{ color: "var(--color-ink-dim)" }}>
+                      0.3 km away
+                    </span>
                     <span className="pill-go">94% match</span>
                   </div>
                 </div>
@@ -406,42 +398,48 @@ export default async function Home() {
                 <div
                   className="mt-4 rounded-2xl p-4 text-xs"
                   style={{
-                    background: "#0a1f12",
-                    border: "1px solid rgba(0,230,118,0.2)",
+                    background:
+                      "color-mix(in srgb, var(--color-go) 6%, var(--color-paper))",
+                    border:
+                      "1px solid color-mix(in srgb, var(--color-go) 20%, transparent)",
                   }}
                 >
-                  <p className="font-bold mb-1" style={{ color: "#00e676" }}>
+                  <p
+                    className="font-bold mb-1"
+                    style={{ color: "var(--color-go)" }}
+                  >
                     Seat confirmed ✓
                   </p>
-                  <p style={{ color: "#a0a0a0" }}>Rahul M. · Swift Dzire</p>
+                  <p style={{ color: "var(--color-ink-muted)" }}>
+                    Rahul M. · Swift Dzire
+                  </p>
                   <div className="route-line my-2" />
-                  <p style={{ color: "#555" }}>🕒 08:30 · ₹240 · 1 seat</p>
+                  <p style={{ color: "var(--color-ink-dim)" }}>
+                    🕒 08:30 · ₹240 · 1 seat
+                  </p>
                 </div>
               ),
             },
           ].map(({ step, icon, title, body, preview }) => (
-            <div
-              key={step}
-              className="card p-6 transition-all hover:shadow-lg"
-              style={{
-                ["--tw-shadow" as string]: "0 0 30px rgba(0,230,118,0.05)",
-              }}
-            >
+            <div key={step} className="card p-6 transition-all hover:shadow-lg">
               <div className="flex items-start justify-between mb-4">
                 <span className="text-2xl">{icon}</span>
                 <span
                   className="font-display text-xs font-bold"
-                  style={{ color: "#2a2a2a" }}
+                  style={{ color: "var(--color-lane-light)" }}
                 >
                   {step}
                 </span>
               </div>
-              <h3 className="font-display text-lg font-extrabold text-white">
+              <h3
+                className="font-display text-lg font-extrabold"
+                style={{ color: "var(--color-ink)" }}
+              >
                 {title}
               </h3>
               <p
                 className="mt-2 text-sm leading-relaxed"
-                style={{ color: "#a0a0a0" }}
+                style={{ color: "var(--color-ink-muted)" }}
               >
                 {body}
               </p>
@@ -451,84 +449,17 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── STATS ── */}
-      <section
-        style={{
-          borderTop: "1px solid #1f1f1f",
-          borderBottom: "1px solid #1f1f1f",
-          background: "#111",
-        }}
-      >
-        <div className="mx-auto max-w-6xl px-5 py-12">
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
-            {[
-              { value: "Route-level", label: "Matching" },
-              { value: "₹8/km", label: "Starting price" },
-              { value: "1-tap", label: "Booking" },
-              { value: "0%", label: "Commission" },
-            ].map(({ value, label }) => (
-              <div key={label} className="text-center">
-                <p
-                  className="font-display text-2xl font-extrabold sm:text-3xl"
-                  style={{ color: "#00e676" }}
-                >
-                  {value}
-                </p>
-                <p className="mt-1 text-xs" style={{ color: "#555" }}>
-                  {label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── FINAL CTA ── */}
-      <section className="mx-auto max-w-3xl px-5 py-24 text-center sm:py-32">
-        <h2
-          className="font-display text-4xl font-extrabold sm:text-6xl"
-          style={{ lineHeight: 1.1 }}
-        >
-          Your ride is
-          <br />
-          <span
-            style={{
-              background: "linear-gradient(90deg, #00e676, #69f0ae)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
-          >
-            already out there.
-          </span>
-        </h2>
-        <p className="mt-5 text-lg" style={{ color: "#a0a0a0" }}>
-          Someone's driving your route today. Match in seconds.
-        </p>
-        <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-          <Link
-            href="/search"
-            className="btn-go w-full px-12 py-4 text-center text-base sm:w-auto"
-          >
-            Find my ride →
-          </Link>
-          <Link
-            href="/signup"
-            className="btn-outline w-full px-12 py-4 text-center text-base sm:w-auto"
-          >
-            Create account
-          </Link>
-        </div>
-      </section>
-
       {/* ── FOOTER ── */}
-      <footer style={{ borderTop: "1px solid #1f1f1f" }}>
+      <footer style={{ borderTop: "1px solid var(--color-border)" }}>
         <div
           className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-5 py-10 text-xs sm:flex-row"
-          style={{ color: "#555" }}
+          style={{ color: "var(--color-ink-dim)" }}
         >
-          <span className="font-display text-lg font-extrabold text-white">
-            Hop<span style={{ color: "#00e676" }}>On</span>
+          <span
+            className="font-display text-lg font-extrabold"
+            style={{ color: "var(--color-ink)" }}
+          >
+            Hop<span style={{ color: "var(--color-go)" }}>On</span>
           </span>
           <span>Share the road. Split the cost.</span>
           <div className="flex gap-6">
