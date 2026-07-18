@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import LocationSearch from "@/components/LocationSearch";
 import { getRoute, type GeoResult } from "@/lib/geocode";
 
-// Loaded dynamically to avoid SSR issues (MapLibre needs the browser window)
 import dynamic from "next/dynamic";
 const RouteMap = dynamic(() => import("@/components/RouteMap"), { ssr: false });
 
@@ -59,7 +59,6 @@ export default function PublishRidePage() {
       distanceKm: route.distanceKm,
       durationMin: route.durationMin,
     });
-    // Default price suggestion: ~₹8/km, rounded
     setPrice(Math.max(5, Math.round(route.distanceKm * 8)));
   }
 
@@ -102,7 +101,7 @@ export default function PublishRidePage() {
         return;
       }
 
-      router.push("/");
+      router.push("/dashboard");
     } catch {
       setError("Something went wrong publishing the ride.");
     } finally {
@@ -111,98 +110,134 @@ export default function PublishRidePage() {
   }
 
   return (
-    <main className="mx-auto max-w-2xl p-6">
-      <h1 className="mb-6 text-2xl font-bold">Publish a ride</h1>
-
-      {error && (
-        <p className="mb-4 rounded bg-red-50 p-2 text-sm text-red-700">
-          {error}
-        </p>
-      )}
-
-      <div className="mb-4 space-y-3">
-        <LocationSearch
-          placeholder="Pickup location"
-          onSelect={handlePickupSelect}
-        />
-        <LocationSearch
-          placeholder="Destination"
-          onSelect={handleDestinationSelect}
-        />
-      </div>
-
-      <RouteMap
-        pickup={pickup}
-        destination={destination}
-        routeCoordinates={routeCoords}
-      />
-
-      {loadingRoute && (
-        <p className="mt-2 text-sm text-gray-500">Calculating route...</p>
-      )}
-      {routeInfo && (
-        <p className="mt-2 text-sm text-gray-600">
-          {routeInfo.distanceKm.toFixed(1)} km ·{" "}
-          {Math.round(routeInfo.durationMin)} min
-        </p>
-      )}
-
-      <form onSubmit={handleSubmit} className="mt-6 space-y-3">
-        <input
-          className="w-full rounded border border-gray-300 p-2"
-          placeholder="Vehicle (e.g. Honda City, White)"
-          value={vehicle}
-          onChange={(e) => setVehicle(e.target.value)}
-          required
-        />
-        <div className="grid grid-cols-2 gap-3">
-          <input
-            className="rounded border border-gray-300 p-2"
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-          />
-          <input
-            className="rounded border border-gray-300 p-2"
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            required
-          />
+    <div className="min-h-screen bg-paper">
+      {/* Nav */}
+      <header className="border-b border-lane-light bg-white">
+        <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-4">
+          <Link
+            href="/"
+            className="font-display text-xl font-extrabold text-road"
+          >
+            HopOn
+          </Link>
+          <Link
+            href="/dashboard"
+            className="text-sm text-ink/60 hover:text-ink"
+          >
+            ← Dashboard
+          </Link>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <label className="text-sm text-gray-600">
-            Seats available
-            <input
-              className="mt-1 w-full rounded border border-gray-300 p-2"
-              type="number"
-              min={1}
-              max={8}
-              value={seats}
-              onChange={(e) => setSeats(Number(e.target.value))}
-            />
-          </label>
-          <label className="text-sm text-gray-600">
-            Price per seat (₹)
-            <input
-              className="mt-1 w-full rounded border border-gray-300 p-2"
-              type="number"
-              min={1}
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-            />
-          </label>
+      </header>
+
+      <main className="mx-auto max-w-2xl px-4 py-8">
+        <div className="mb-6">
+          <h1 className="font-display text-2xl font-extrabold text-ink">
+            Publish a ride
+          </h1>
+          <p className="mt-1 text-sm text-ink/60">
+            Share your route and split the cost with fellow travellers.
+          </p>
         </div>
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded bg-black p-2 text-white disabled:opacity-50"
-        >
-          {submitting ? "Publishing..." : "Publish ride"}
-        </button>
-      </form>
-    </main>
+        {error && (
+          <p className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+            {error}
+          </p>
+        )}
+
+        <div className="mb-4 space-y-3">
+          <LocationSearch
+            placeholder="Pickup location"
+            onSelect={handlePickupSelect}
+          />
+          <LocationSearch
+            placeholder="Destination"
+            onSelect={handleDestinationSelect}
+          />
+        </div>
+
+        <RouteMap
+          pickup={pickup}
+          destination={destination}
+          routeCoordinates={routeCoords}
+        />
+
+        {loadingRoute && (
+          <p className="mt-2 text-sm text-ink/50">Calculating route...</p>
+        )}
+        {routeInfo && (
+          <div className="mt-3 flex items-center gap-3">
+            <div className="route-line flex-1" />
+            <p className="shrink-0 text-sm font-medium text-ink/70">
+              {routeInfo.distanceKm.toFixed(1)} km ·{" "}
+              {Math.round(routeInfo.durationMin)} min
+            </p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <input
+            className="w-full rounded-xl border border-lane-light bg-white p-3 text-ink placeholder-ink/40 focus:border-road focus:outline-none"
+            placeholder="Vehicle (e.g. Honda City, White)"
+            value={vehicle}
+            onChange={(e) => setVehicle(e.target.value)}
+            required
+          />
+
+          <div className="grid grid-cols-2 gap-3">
+            <input
+              className="rounded-xl border border-lane-light bg-white p-3 text-ink focus:border-road focus:outline-none"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
+            <input
+              className="rounded-xl border border-lane-light bg-white p-3 text-ink focus:border-road focus:outline-none"
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-ink/50 uppercase tracking-wide">
+                Seats available
+              </label>
+              <input
+                className="w-full rounded-xl border border-lane-light bg-white p-3 text-ink focus:border-road focus:outline-none"
+                type="number"
+                min={1}
+                max={8}
+                value={seats}
+                onChange={(e) => setSeats(Number(e.target.value))}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-ink/50 uppercase tracking-wide">
+                Price per seat (₹)
+              </label>
+              <input
+                className="w-full rounded-xl border border-lane-light bg-white p-3 text-ink focus:border-road focus:outline-none"
+                type="number"
+                min={1}
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full rounded-xl bg-road py-3 font-display font-bold text-paper hover:bg-road-light disabled:opacity-50"
+          >
+            {submitting ? "Publishing..." : "Publish ride"}
+          </button>
+        </form>
+      </main>
+    </div>
   );
 }

@@ -1,42 +1,64 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper: #faf8f4;
-  --color-ink: #1b1a18;
-  --color-road: #243b53;
-  --color-road-light: #34526f;
-  --color-signal: #e8a33d;
-  --color-signal-dark: #c98527;
-  --color-lane: #7a8a99;
-  --color-lane-light: #d9dee3;
-  --color-success: #4c7a5d;
+  /* New dark-first palette */
+  --color-paper: #0f0f0f;
+  --color-surface: #1a1a1a;
+  --color-surface-2: #222222;
+  --color-border: #2a2a2a;
+  --color-ink: #ffffff;
+  --color-ink-muted: #a0a0a0;
+  --color-ink-dim: #555555;
+
+  /* Accent — electric green (movement, go, live) */
+  --color-go: #00e676;
+  --color-go-dark: #00c853;
+  --color-go-glow: rgba(0, 230, 118, 0.15);
+
+  /* Energy orange — for highlights, prices, urgency */
+  --color-spark: #ff6b35;
+  --color-spark-glow: rgba(255, 107, 53, 0.15);
+
+  /* Keep these for semantic use */
+  --color-success: #00e676;
+  --color-road: #00e676;
+  --color-road-light: #00c853;
+  --color-signal: #ff6b35;
+  --color-signal-dark: #e55a25;
+  --color-lane: #555555;
+  --color-lane-light: #2a2a2a;
 
   --font-display: var(--font-archivo), "Arial Narrow", sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   background-color: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
 }
 
 .font-display {
   font-family: var(--font-display);
 }
 
-/* Signature element: dashed route-line, used to visually connect
-   pickup -> destination anywhere we show a route, echoing a lane marking. */
+/* Route line — now glows green */
 .route-line {
   position: relative;
   height: 1px;
   background-image: repeating-linear-gradient(
     to right,
-    var(--color-lane) 0,
-    var(--color-lane) 6px,
+    var(--color-go) 0,
+    var(--color-go) 6px,
     transparent 6px,
     transparent 12px
   );
+  opacity: 0.4;
 }
 
 .route-line::before,
@@ -52,10 +74,148 @@ body {
 
 .route-line::before {
   left: -2px;
-  background-color: var(--color-road);
+  background-color: var(--color-go);
+  box-shadow: 0 0 8px var(--color-go);
 }
 
 .route-line::after {
   right: -2px;
-  background-color: var(--color-signal);
+  background-color: var(--color-spark);
+  box-shadow: 0 0 8px var(--color-spark);
+}
+
+/* Glow button */
+.btn-go {
+  background: var(--color-go);
+  color: #0f0f0f;
+  font-family: var(--font-display);
+  font-weight: 800;
+  border-radius: 14px;
+  transition: all 0.2s;
+  box-shadow: 0 0 24px var(--color-go-glow);
+}
+
+.btn-go:hover {
+  background: var(--color-go-dark);
+  box-shadow: 0 0 32px rgba(0, 230, 118, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-go);
+  border: 1.5px solid var(--color-go);
+  font-family: var(--font-display);
+  font-weight: 800;
+  border-radius: 14px;
+  transition: all 0.2s;
+}
+
+.btn-outline:hover {
+  background: var(--color-go-glow);
+  box-shadow: 0 0 24px var(--color-go-glow);
+}
+
+/* Card */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+}
+
+.card:hover {
+  border-color: #3a3a3a;
+}
+
+/* Pill */
+.pill-go {
+  background: var(--color-go-glow);
+  color: var(--color-go);
+  border: 1px solid rgba(0, 230, 118, 0.2);
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+}
+
+.pill-spark {
+  background: var(--color-spark-glow);
+  color: var(--color-spark);
+  border: 1px solid rgba(255, 107, 53, 0.2);
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+}
+
+/* Input */
+.input-dark {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  color: var(--color-ink);
+  padding: 12px 16px;
+  font-size: 14px;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+
+.input-dark::placeholder {
+  color: var(--color-ink-dim);
+}
+
+.input-dark:focus {
+  outline: none;
+  border-color: var(--color-go);
+  box-shadow: 0 0 0 3px var(--color-go-glow);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-paper);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+@keyframes slideRight {
+  from {
+    left: 2%;
+  }
+  to {
+    left: calc(50% - 22px);
+  }
+}
+@keyframes slideLeft {
+  from {
+    right: 2%;
+  }
+  to {
+    right: calc(50% - 22px);
+  }
+}
+@keyframes meetPulse {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.8);
+  }
+}
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

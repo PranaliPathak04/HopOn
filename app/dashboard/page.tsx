@@ -193,7 +193,6 @@ function BookingsTab() {
             </div>
             <div className="flex shrink-0 flex-col items-end gap-1.5">
               {statusPill(b.status)}
-              {statusPill(b.paymentStatus)}
             </div>
           </div>
 
@@ -403,6 +402,9 @@ export default function DashboardPage() {
             HopOn
           </Link>
           <div className="flex items-center gap-4">
+            <Link href="/search" className="text-sm text-ink/70 hover:text-ink">
+              Find a ride
+            </Link>
             <Link
               href="/publish"
               className="rounded-xl border border-lane-light px-4 py-1.5 font-display text-sm font-bold text-road hover:border-road"
