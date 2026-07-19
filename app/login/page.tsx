@@ -4,6 +4,15 @@ import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Mail,
+  Lock,
+  ArrowRight,
+  Loader2,
+  AlertCircle,
+  ArrowLeft,
+} from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,7 +34,7 @@ export default function LoginPage() {
     setLoading(false);
 
     if (res?.error) {
-      setError("Invalid email or password");
+      setError("Invalid email or password.");
       return;
     }
 
@@ -34,56 +43,157 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-6">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-4 rounded-2xl border border-lane-light bg-white p-7"
+    <main
+      className="flex min-h-screen items-center justify-center p-6"
+      style={{ background: "var(--color-paper)" }}
+    >
+      <motion.div
+        className="w-full max-w-sm"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
       >
-        <Link href="/" className="font-display text-sm font-bold text-road">
-          ← HopOn
-        </Link>
-        <h1 className="font-display text-2xl font-extrabold text-ink">
-          Log in
-        </h1>
-
-        {error && (
-          <p className="rounded-lg bg-red-50 p-2.5 text-sm text-red-700">
-            {error}
-          </p>
-        )}
-
-        <input
-          className="w-full rounded-lg border border-lane-light p-2.5"
-          placeholder="Email"
-          type="email"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          required
-        />
-        <input
-          className="w-full rounded-lg border border-lane-light p-2.5"
-          placeholder="Password"
-          type="password"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-          required
-        />
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-xl bg-road py-2.5 font-display font-bold text-paper hover:bg-road-light disabled:opacity-50"
+        <div
+          className="rounded-2xl p-7 space-y-5"
+          style={{
+            background: "var(--color-surface)",
+            border: "1px solid var(--color-border)",
+          }}
         >
-          {loading ? "Logging in..." : "Log in"}
-        </button>
-
-        <p className="text-center text-sm text-ink/60">
-          Don&apos;t have an account?{" "}
-          <Link href="/signup" className="font-semibold text-road underline">
-            Sign up
+          {/* Back link */}
+          <Link
+            href="/"
+            className="nav-link flex items-center gap-1.5 text-sm font-semibold transition-colors w-fit"
+          >
+            <ArrowLeft size={14} />
+            <div className="flex items-center gap-1.5">
+              <img src="/hopon-car.svg" alt="" width={22} height={20} />
+              <span className="font-display font-extrabold">
+                Hop<span style={{ color: "var(--color-go)" }}>On</span>
+              </span>
+            </div>
           </Link>
-        </p>
-      </form>
+
+          <div>
+            <h1
+              className="font-display text-2xl font-extrabold"
+              style={{ color: "var(--color-ink)" }}
+            >
+              Welcome back
+            </h1>
+            <p
+              className="mt-1 text-sm"
+              style={{ color: "var(--color-ink-muted)" }}
+            >
+              Log in to find or offer a ride.
+            </p>
+          </div>
+
+          {/* Error */}
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                className="flex items-start gap-2.5 rounded-xl p-3 text-sm"
+                style={{
+                  background: "var(--color-spark-glow)",
+                  border: "1px solid rgba(255,107,53,0.2)",
+                  color: "var(--color-signal)",
+                }}
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2 }}
+              >
+                <AlertCircle
+                  size={15}
+                  style={{ flexShrink: 0, marginTop: 1 }}
+                />
+                {error}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-3">
+            {/* Email */}
+            <div
+              className="flex items-center gap-3 rounded-xl px-4 py-3"
+              style={{
+                background: "var(--color-surface-2)",
+                border: "1px solid var(--color-border)",
+              }}
+            >
+              <Mail
+                size={15}
+                style={{ color: "var(--color-ink-dim)", flexShrink: 0 }}
+              />
+              <input
+                className="flex-1 bg-transparent text-sm focus:outline-none"
+                style={{ color: "var(--color-ink)" }}
+                placeholder="Email"
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                required
+              />
+            </div>
+
+            {/* Password */}
+            <div
+              className="flex items-center gap-3 rounded-xl px-4 py-3"
+              style={{
+                background: "var(--color-surface-2)",
+                border: "1px solid var(--color-border)",
+              }}
+            >
+              <Lock
+                size={15}
+                style={{ color: "var(--color-ink-dim)", flexShrink: 0 }}
+              />
+              <input
+                className="flex-1 bg-transparent text-sm focus:outline-none"
+                style={{ color: "var(--color-ink)" }}
+                placeholder="Password"
+                type="password"
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-go mt-1 w-full py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <Loader2 size={15} className="animate-spin" /> Logging in...
+                </>
+              ) : (
+                <>
+                  Log in <ArrowRight size={15} />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Signup link */}
+          <p
+            className="text-center text-sm"
+            style={{ color: "var(--color-ink-muted)" }}
+          >
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/signup"
+              className="font-semibold transition-colors"
+              style={{ color: "var(--color-go)" }}
+            >
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </motion.div>
     </main>
   );
 }
