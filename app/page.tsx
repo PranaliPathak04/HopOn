@@ -2,6 +2,17 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import SignOutButton from "@/components/SignOutButton";
+import {
+  MapPin,
+  Navigation,
+  Ruler,
+  Armchair,
+  Zap,
+  IndianRupee,
+  CheckCircle2,
+  Clock,
+  Target,
+} from "lucide-react";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -132,7 +143,8 @@ export default async function Home() {
             "No commission",
           ].map((t) => (
             <span key={t} className="flex items-center gap-2 text-xs">
-              <span style={{ color: "var(--color-go)" }}>✓</span> {t}
+              <CheckCircle2 size={13} style={{ color: "var(--color-go)" }} />
+              {t}
             </span>
           ))}
         </div>
@@ -164,8 +176,13 @@ export default async function Home() {
             className="mb-5 flex items-center justify-between text-xs font-bold uppercase tracking-widest"
             style={{ color: "var(--color-ink-dim)" }}
           >
-            <span>📍 Pickup</span>
-            <span>Drop 📍</span>
+            <span className="flex items-center gap-1.5">
+              <MapPin size={12} style={{ color: "var(--color-go)" }} /> Pickup
+            </span>
+            <span className="flex items-center gap-1.5">
+              Drop{" "}
+              <Navigation size={12} style={{ color: "var(--color-signal)" }} />
+            </span>
           </div>
 
           {/* Road */}
@@ -256,10 +273,10 @@ export default async function Home() {
           {/* Chips */}
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             {[
-              { icon: "📏", label: "12.9 km shared" },
-              { icon: "💺", label: "2 seats left" },
-              { icon: "⚡", label: "Instant confirm" },
-              { icon: "₹", label: "Fair per-km price" },
+              { icon: <Ruler size={13} />, label: "12.9 km shared" },
+              { icon: <Armchair size={13} />, label: "2 seats left" },
+              { icon: <Zap size={13} />, label: "Instant confirm" },
+              { icon: <IndianRupee size={13} />, label: "Fair per-km price" },
             ].map((c) => (
               <span
                 key={c.label}
@@ -290,7 +307,7 @@ export default async function Home() {
           {[
             {
               step: "01",
-              icon: "📍",
+              icon: <MapPin size={22} style={{ color: "var(--color-go)" }} />,
               title: "Set your route",
               body: "Drop your pickup and destination. We match against real driver paths — not just city names.",
               preview: (
@@ -349,7 +366,7 @@ export default async function Home() {
             },
             {
               step: "02",
-              icon: "🎯",
+              icon: <Target size={22} style={{ color: "var(--color-go)" }} />,
               title: "See real matches",
               body: "Every result shows pickup proximity and drop distance — no guessing if it's actually on your route.",
               preview: (
@@ -391,7 +408,7 @@ export default async function Home() {
             },
             {
               step: "03",
-              icon: "⚡",
+              icon: <Zap size={22} style={{ color: "var(--color-go)" }} />,
               title: "Book instantly",
               body: "One tap. Your seat is reserved atomically — no double-booking, no waiting for driver approval.",
               preview: (
@@ -405,17 +422,20 @@ export default async function Home() {
                   }}
                 >
                   <p
-                    className="font-bold mb-1"
+                    className="font-bold mb-1 flex items-center gap-1.5"
                     style={{ color: "var(--color-go)" }}
                   >
-                    Seat confirmed ✓
+                    <CheckCircle2 size={13} /> Seat confirmed
                   </p>
                   <p style={{ color: "var(--color-ink-muted)" }}>
                     Rahul M. · Swift Dzire
                   </p>
                   <div className="route-line my-2" />
-                  <p style={{ color: "var(--color-ink-dim)" }}>
-                    🕒 08:30 · ₹240 · 1 seat
+                  <p
+                    className="flex items-center gap-1.5"
+                    style={{ color: "var(--color-ink-dim)" }}
+                  >
+                    <Clock size={11} /> 08:30 · ₹240 · 1 seat
                   </p>
                 </div>
               ),
@@ -452,16 +472,21 @@ export default async function Home() {
       {/* ── FOOTER ── */}
       <footer style={{ borderTop: "1px solid var(--color-border)" }}>
         <div
-          className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-5 py-10 text-xs sm:flex-row"
-          style={{ color: "var(--color-ink-dim)" }}
+          className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-5 py-10 text-s sm:flex-row"
+          style={{ color: "var(--color-go)" }}
         >
-          <span
-            className="font-display text-lg font-extrabold"
-            style={{ color: "var(--color-ink)" }}
-          >
-            Hop<span style={{ color: "var(--color-go)" }}>On</span>
+          <Link href="/" className="flex items-center gap-2">
+            <img src="/hopon-car.svg" alt="" width={28} height={25} />
+            <span
+              className="font-display text-lg font-extrabold"
+              style={{ color: "var(--color-ink)" }}
+            >
+              Hop<span style={{ color: "var(--color-go)" }}>On</span>
+            </span>
+          </Link>
+          <span style={{ color: "var(--color-ink-muted)" }}>
+            Share the road. Split the cost.
           </span>
-          <span>Share the road. Split the cost.</span>
           <div className="flex gap-6">
             <Link href="/search" className="hover:text-white transition-colors">
               Find a ride

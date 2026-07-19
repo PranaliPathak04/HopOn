@@ -17,6 +17,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "HopOn — Share the ride, split the way",
   description: "Find and offer carpool rides on routes people actually take.",
+  icons: {
+    icon: "/hopon-car.svg",
+  },
 };
 
 export default function RootLayout({
