@@ -44,6 +44,13 @@ export default async function Home() {
             {session?.user ? (
               <>
                 <Link
+                  href="/profile"
+                  style={{ color: "var(--color-ink-muted)" }}
+                  className="nav-link transition-colors"
+                >
+                  Profile
+                </Link>
+                <Link
                   href="/search"
                   style={{ color: "var(--color-ink-muted)" }}
                   className="hover:text-white transition-colors"

@@ -269,7 +269,7 @@ export default function ProfilePage() {
     setError(null);
     try {
       const newAddresses = [
-        ...(profile.addresses ?? []).map((a) => ({
+        ...profile.addresses.map((a) => ({
           label: a.label,
           latitude: a.latitude,
           longitude: a.longitude,

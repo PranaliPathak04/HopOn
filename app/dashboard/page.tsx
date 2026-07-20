@@ -665,6 +665,13 @@ export default function DashboardPage() {
           </Link>
           <div className="flex items-center gap-3">
             <Link
+              href="/profile"
+              style={{ color: "var(--color-ink-muted)" }}
+              className="nav-link transition-colors"
+            >
+              Profile
+            </Link>
+            <Link
               href="/search"
               className="hidden items-center gap-1.5 text-sm transition-colors hover:text-white sm:flex"
               style={{ color: "var(--color-ink-muted)" }}
