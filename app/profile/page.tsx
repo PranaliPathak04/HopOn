@@ -178,8 +178,7 @@ export default function ProfilePage() {
   const [loadingVehicles, setLoadingVehicles] = useState(true);
 
   // Personal info edit
-  const [editName, setEditName] = useState("");
-  const [editPhone, setEditPhone] = useState("");
+
   const [editLicense, setEditLicense] = useState("");
   const [savingInfo, setSavingInfo] = useState(false);
   const [infoSaved, setInfoSaved] = useState(false);
@@ -218,8 +217,7 @@ export default function ProfilePage() {
       .then((d) => {
         if (d.success) {
           setProfile(d.user);
-          setEditName(d.user.name);
-          setEditPhone(d.user.phone);
+
           setEditLicense(d.user.licenseNumber ?? "");
         }
       })
@@ -244,8 +242,6 @@ export default function ProfilePage() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: editName,
-          phone: editPhone,
           licenseNumber: editLicense,
         }),
       });
@@ -524,7 +520,10 @@ export default function ProfilePage() {
               )}
 
               {/* Name */}
-              <div className={inputClass} style={inputStyle}>
+              <div
+                className={inputClass}
+                style={{ ...inputStyle, opacity: 0.6 }}
+              >
                 <User
                   size={15}
                   style={{ color: "var(--color-ink-dim)", flexShrink: 0 }}
@@ -533,9 +532,15 @@ export default function ProfilePage() {
                   className="flex-1 bg-transparent text-sm focus:outline-none"
                   style={{ color: "var(--color-ink)" }}
                   placeholder="Full name"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
+                  value={profile?.name ?? ""}
+                  readOnly
                 />
+                <span
+                  className="text-xs"
+                  style={{ color: "var(--color-ink-dim)" }}
+                >
+                  read-only
+                </span>
               </div>
 
               {/* Email — read only */}
@@ -562,7 +567,10 @@ export default function ProfilePage() {
               </div>
 
               {/* Phone */}
-              <div className={inputClass} style={inputStyle}>
+              <div
+                className={inputClass}
+                style={{ ...inputStyle, opacity: 0.6 }}
+              >
                 <Phone
                   size={15}
                   style={{ color: "var(--color-ink-dim)", flexShrink: 0 }}
@@ -571,9 +579,15 @@ export default function ProfilePage() {
                   className="flex-1 bg-transparent text-sm focus:outline-none"
                   style={{ color: "var(--color-ink)" }}
                   placeholder="Phone number"
-                  value={editPhone}
-                  onChange={(e) => setEditPhone(e.target.value)}
+                  value={profile?.phone ?? ""}
+                  readOnly
                 />
+                <span
+                  className="text-xs"
+                  style={{ color: "var(--color-ink-dim)" }}
+                >
+                  read-only
+                </span>
               </div>
 
               {/* License number */}
