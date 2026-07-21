@@ -8,14 +8,26 @@ interface Props {
   placeholder: string;
   onSelect: (result: GeoResult) => void;
   icon?: ReactNode;
+  value?: GeoResult | null; // external value — e.g. set via a quick-pick button
 }
 
-export default function LocationSearch({ placeholder, onSelect, icon }: Props) {
+export default function LocationSearch({
+  placeholder,
+  onSelect,
+  icon,
+  value,
+}: Props) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<GeoResult[]>([]);
   const [open, setOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Sync displayed text when the value is set externally (e.g. quick-pick address)
+  useEffect(() => {
+    if (value) setQuery(value.label);
+    else setQuery("");
+  }, [value?.latitude, value?.longitude, value?.label]);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -68,9 +80,7 @@ export default function LocationSearch({ placeholder, onSelect, icon }: Props) {
           border: "1px solid var(--color-border)",
           transition: "border-color 0.15s",
         }}
-        onFocus={() => {}}
       >
-        {/* Icon — fallback to MapPin if none passed */}
         <span style={{ flexShrink: 0, display: "flex", alignItems: "center" }}>
           {icon ?? (
             <MapPin size={15} style={{ color: "var(--color-ink-dim)" }} />

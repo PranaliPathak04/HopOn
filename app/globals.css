@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* New dark-first palette */
+  /* Dark-first palette */
   --color-paper: #0f0f0f;
   --color-surface: #1a1a1a;
   --color-surface-2: #222222;
@@ -10,21 +10,27 @@
   --color-ink-muted: #a0a0a0;
   --color-ink-dim: #555555;
 
-  /* Accent — electric green (movement, go, live) */
+  /* Accent — amber/gold (action color: buttons, CTAs, price) */
   --color-go: #fbbf24;
   --color-go-dark: #f59e0b;
   --color-go-glow: rgba(251, 191, 36, 0.15);
 
-  /* Energy orange — for highlights, prices, urgency */
-  --color-spark: #ff6b35;
-  --color-spark-glow: rgba(255, 107, 53, 0.15);
+  /* Secondary accent — teal (status/location: confirmed, live, drop pins, matches) */
+  --color-tide: #14b8a6;
+  --color-tide-dark: #0d9488;
+  --color-tide-glow: rgba(20, 184, 166, 0.15);
 
-  /* Keep these for semantic use */
-  --color-success: #00e676;
-  --color-road: #00e676;
-  --color-road-light: #00c853;
-  --color-signal: #ff6b35;
-  --color-signal-dark: #e55a25;
+  /* Keep spark for rare urgency use only (cancel, low seats, errors) */
+  --color-spark: #f43f5e;
+  --color-spark-dark: #e11d48;
+  --color-spark-glow: rgba(244, 63, 94, 0.15);
+
+  /* Semantic */
+  --color-success: #14b8a6;
+  --color-road: #14b8a6;
+  --color-road-light: #2dd4bf;
+  --color-signal: #f43f5e;
+  --color-signal-dark: #e11d48;
   --color-lane: #555555;
   --color-lane-light: #2a2a2a;
 
@@ -47,7 +53,7 @@ body {
   font-family: var(--font-display);
 }
 
-/* Route line — now glows green */
+/* Route line — pickup dot stays gold, drop dot now teal */
 .route-line {
   position: relative;
   height: 1px;
@@ -80,11 +86,11 @@ body {
 
 .route-line::after {
   right: -2px;
-  background-color: var(--color-spark);
-  box-shadow: 0 0 8px var(--color-spark);
+  background-color: var(--color-tide);
+  box-shadow: 0 0 8px var(--color-tide);
 }
 
-/* Glow button */
+/* Primary action button — stays gold */
 .btn-go {
   background: var(--color-go);
   color: #0f0f0f;
@@ -97,7 +103,7 @@ body {
 
 .btn-go:hover {
   background: var(--color-go-dark);
-  box-shadow: 0 0 32px rgba(0, 230, 118, 0.3);
+  box-shadow: 0 0 32px rgba(251, 191, 36, 0.3);
   transform: translateY(-1px);
 }
 
@@ -116,6 +122,38 @@ body {
   box-shadow: 0 0 24px var(--color-go-glow);
 }
 
+.btn-outline-tide {
+  background: transparent;
+  color: var(--color-tide);
+  border: 1.5px solid var(--color-tide);
+  font-family: var(--font-display);
+  font-weight: 800;
+  border-radius: 14px;
+  transition: all 0.2s;
+}
+
+.btn-outline-tide:hover {
+  background: var(--color-tide-glow);
+  box-shadow: 0 0 24px var(--color-tide-glow);
+}
+
+/* Secondary button — teal, use for status/confirm actions */
+.btn-tide {
+  background: var(--color-tide);
+  color: #0f0f0f;
+  font-family: var(--font-display);
+  font-weight: 800;
+  border-radius: 14px;
+  transition: all 0.2s;
+  box-shadow: 0 0 24px var(--color-tide-glow);
+}
+
+.btn-tide:hover {
+  background: var(--color-tide-dark);
+  box-shadow: 0 0 32px rgba(20, 184, 166, 0.3);
+  transform: translateY(-1px);
+}
+
 /* Card */
 .card {
   background: var(--color-surface);
@@ -127,11 +165,21 @@ body {
   border-color: #3a3a3a;
 }
 
-/* Pill */
+/* Pills — gold for action-related tags, teal for status/match tags */
 .pill-go {
   background: var(--color-go-glow);
   color: var(--color-go);
-  border: 1px solid rgba(0, 230, 118, 0.2);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+}
+
+.pill-tide {
+  background: var(--color-tide-glow);
+  color: var(--color-tide);
+  border: 1px solid rgba(20, 184, 166, 0.2);
   border-radius: 9999px;
   font-size: 11px;
   font-weight: 700;
@@ -141,14 +189,14 @@ body {
 .pill-spark {
   background: var(--color-spark-glow);
   color: var(--color-spark);
-  border: 1px solid rgba(255, 107, 53, 0.2);
+  border: 1px solid rgba(244, 63, 94, 0.2);
   border-radius: 9999px;
   font-size: 11px;
   font-weight: 700;
   padding: 3px 10px;
 }
 
-/* Input */
+/* Input — focus ring now teal instead of gold, feels calmer/less "everything glows gold" */
 .input-dark {
   background: var(--color-surface-2);
   border: 1px solid var(--color-border);
@@ -166,8 +214,8 @@ body {
 
 .input-dark:focus {
   outline: none;
-  border-color: var(--color-go);
-  box-shadow: 0 0 0 3px var(--color-go-glow);
+  border-color: var(--color-tide);
+  box-shadow: 0 0 0 3px var(--color-tide-glow);
 }
 
 /* Scrollbar */

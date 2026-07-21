@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+
 import { motion, AnimatePresence } from "framer-motion";
 import {
   User,
@@ -32,6 +33,7 @@ import {
 import LocationSearch from "@/components/LocationSearch";
 import type { GeoResult } from "@/lib/geocode";
 import carsData from "@/data/cars.json";
+import ImageUpload from "@/components/ImageUpload";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -60,6 +62,8 @@ interface UserProfile {
   email: string;
   phone: string;
   licenseNumber: string | null;
+  photoUrl: string | null;
+  licensePhotoUrl: string | null;
   verificationStatus: "unverified" | "pending" | "verified" | "rejected";
   addresses: Address[];
 }
@@ -185,6 +189,7 @@ export default function ProfilePage() {
   const [addrLocation, setAddrLocation] = useState<GeoResult | null>(null);
   const [addrLabel, setAddrLabel] = useState("Home");
   const [savingAddress, setSavingAddress] = useState(false);
+  const [editingInfo, setEditingInfo] = useState(false);
 
   // Vehicle form
   const [showAddVehicle, setShowAddVehicle] = useState(false);
@@ -498,6 +503,21 @@ export default function ProfilePage() {
           {/* ── Personal Info ── */}
           <Section title="Personal Info">
             <div className="space-y-3">
+              <ImageUpload
+                label="Profile photo"
+                folder="profile"
+                currentUrl={profile?.photoUrl}
+                shape="circle"
+                onUploaded={async (url) => {
+                  const res = await fetch("/api/users/me", {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ photoUrl: url }),
+                  });
+                  const data = await res.json();
+                  if (data.success) setProfile(data.user);
+                }}
+              />
               {/* Verification badge */}
               {profile && (
                 <VerificationBadge status={profile.verificationStatus} />
@@ -570,6 +590,22 @@ export default function ProfilePage() {
                   onChange={(e) => setEditLicense(e.target.value)}
                 />
               </div>
+
+              <ImageUpload
+                label="Driving license photo"
+                folder="license"
+                currentUrl={profile?.licensePhotoUrl}
+                shape="rounded"
+                onUploaded={async (url) => {
+                  const res = await fetch("/api/users/me", {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ licensePhotoUrl: url }),
+                  });
+                  const data = await res.json();
+                  if (data.success) setProfile(data.user);
+                }}
+              />
 
               <button
                 onClick={savePersonalInfo}

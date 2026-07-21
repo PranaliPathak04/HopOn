@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -11,11 +11,33 @@ import {
   Loader2,
   Route,
   Plus,
+  Home,
+  Briefcase,
+  GraduationCap,
+  Heart,
 } from "lucide-react";
 import LocationSearch from "@/components/LocationSearch";
 import RideCard from "@/components/RideCard";
 import type { GeoResult } from "@/lib/geocode";
 import type { RideSearchResult } from "@/types";
+
+// ── Saved address types ──────────────────────────────────────────────────────
+
+interface SavedAddress {
+  _id: string;
+  label: string;
+  latitude: number;
+  longitude: number;
+  displayName: string;
+}
+
+const ADDRESS_LABEL_ICONS: Record<string, React.ReactNode> = {
+  Home: <Home size={12} />,
+  Office: <Briefcase size={12} />,
+  College: <GraduationCap size={12} />,
+  School: <GraduationCap size={12} />,
+  Other: <Heart size={12} />,
+};
 
 export default function SearchPage() {
   const [pickup, setPickup] = useState<GeoResult | null>(null);
@@ -24,6 +46,35 @@ export default function SearchPage() {
   const [results, setResults] = useState<RideSearchResult[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Saved addresses
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+  const [activeQuickPick, setActiveQuickPick] = useState<
+    "pickup" | "destination" | null
+  >(null);
+
+  useEffect(() => {
+    fetch("/api/users/me")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success) setSavedAddresses(d.user.addresses ?? []);
+      })
+      .catch(() => {});
+  }, []);
+
+  function selectSavedAddress(
+    addr: SavedAddress,
+    type: "pickup" | "destination",
+  ) {
+    const geo: GeoResult = {
+      label: addr.displayName,
+      latitude: addr.latitude,
+      longitude: addr.longitude,
+    };
+    if (type === "pickup") setPickup(geo);
+    else setDestination(geo);
+    setActiveQuickPick(type);
+  }
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -126,6 +177,72 @@ export default function SearchPage() {
           transition={{ duration: 0.4, delay: 0.08 }}
         >
           <form onSubmit={handleSearch} className="space-y-3">
+            {/* Saved addresses quick-pick */}
+            {savedAddresses.length > 0 && (
+              <div className="space-y-1.5">
+                <p
+                  className="text-xs font-semibold uppercase tracking-wide"
+                  style={{ color: "var(--color-ink-dim)" }}
+                >
+                  Quick pick — tap for pickup, or select then tap destination
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {savedAddresses.map((addr) => (
+                    <div
+                      key={addr._id}
+                      className="flex rounded-full overflow-hidden"
+                      style={{ border: "1px solid var(--color-border)" }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => selectSavedAddress(addr, "pickup")}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold transition-colors"
+                        style={{
+                          background:
+                            pickup?.latitude === addr.latitude &&
+                            pickup?.longitude === addr.longitude
+                              ? "var(--color-go)"
+                              : "var(--color-surface-2)",
+                          color:
+                            pickup?.latitude === addr.latitude &&
+                            pickup?.longitude === addr.longitude
+                              ? "#0f0f0f"
+                              : "var(--color-ink-muted)",
+                        }}
+                        title={`Set as pickup: ${addr.displayName}`}
+                      >
+                        {ADDRESS_LABEL_ICONS[addr.label] ?? (
+                          <MapPin size={12} />
+                        )}
+                        {addr.label}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => selectSavedAddress(addr, "destination")}
+                        className="flex items-center px-2 py-1.5 text-xs font-semibold transition-colors"
+                        style={{
+                          background:
+                            destination?.latitude === addr.latitude &&
+                            destination?.longitude === addr.longitude
+                              ? "var(--color-signal)"
+                              : "var(--color-surface-2)",
+                          color:
+                            destination?.latitude === addr.latitude &&
+                            destination?.longitude === addr.longitude
+                              ? "#0f0f0f"
+                              : "var(--color-ink-dim)",
+                          borderLeft: "1px solid var(--color-border)",
+                        }}
+                        title={`Set as destination: ${addr.displayName}`}
+                      >
+                        <Navigation size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Route inputs with connector */}
             <div className="flex gap-4">
               {/* Connector line */}
@@ -167,6 +284,7 @@ export default function SearchPage() {
                 <LocationSearch
                   placeholder="Pickup location"
                   onSelect={setPickup}
+                  value={pickup}
                   icon={
                     <MapPin size={15} style={{ color: "var(--color-go)" }} />
                   }
@@ -174,6 +292,7 @@ export default function SearchPage() {
                 <LocationSearch
                   placeholder="Where to?"
                   onSelect={setDestination}
+                  value={destination}
                   icon={
                     <Navigation
                       size={15}
