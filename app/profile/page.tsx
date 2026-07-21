@@ -180,6 +180,7 @@ export default function ProfilePage() {
   // Personal info edit
 
   const [editLicense, setEditLicense] = useState("");
+  const [editingLicense, setEditingLicense] = useState(false);
   const [savingInfo, setSavingInfo] = useState(false);
   const [infoSaved, setInfoSaved] = useState(false);
 
@@ -591,19 +592,90 @@ export default function ProfilePage() {
               </div>
 
               {/* License number */}
-              <div className={inputClass} style={inputStyle}>
-                <BadgeCheck
-                  size={15}
-                  style={{ color: "var(--color-ink-dim)", flexShrink: 0 }}
-                />
-                <input
-                  className="flex-1 bg-transparent text-sm focus:outline-none"
-                  style={{ color: "var(--color-ink)" }}
-                  placeholder="Driving license number (drivers only)"
-                  value={editLicense}
-                  onChange={(e) => setEditLicense(e.target.value)}
-                />
-              </div>
+              {!editingLicense ? (
+                /* Read-only view */
+                <div
+                  className="flex items-center justify-between rounded-xl px-4 py-3"
+                  style={inputStyle}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <BadgeCheck
+                      size={15}
+                      style={{ color: "var(--color-ink-dim)", flexShrink: 0 }}
+                    />
+                    <span
+                      className="text-sm truncate"
+                      style={{
+                        color: profile?.licenseNumber
+                          ? "var(--color-ink)"
+                          : "var(--color-ink-dim)",
+                      }}
+                    >
+                      {profile?.licenseNumber || "No license number added"}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setEditingLicense(true)}
+                    className="flex-shrink-0 text-xs font-semibold transition-colors"
+                    style={{ color: "var(--color-go)" }}
+                  >
+                    {profile?.licenseNumber ? "Update" : "Add"}
+                  </button>
+                </div>
+              ) : (
+                /* Edit mode */
+                <div className="space-y-2">
+                  <div className={inputClass} style={inputStyle}>
+                    <BadgeCheck
+                      size={15}
+                      style={{ color: "var(--color-ink-dim)", flexShrink: 0 }}
+                    />
+                    <input
+                      className="flex-1 bg-transparent text-sm focus:outline-none"
+                      style={{ color: "var(--color-ink)" }}
+                      placeholder="Driving license number (drivers only)"
+                      value={editLicense}
+                      onChange={(e) => setEditLicense(e.target.value)}
+                      autoFocus
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={async () => {
+                        await savePersonalInfo();
+                        setEditingLicense(false);
+                      }}
+                      disabled={savingInfo}
+                      className="btn-go flex-1 py-2.5 text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      {savingInfo ? (
+                        <>
+                          <Loader2 size={13} className="animate-spin" />{" "}
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Check size={13} /> Save
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingLicense(false);
+                        setEditLicense(profile?.licenseNumber ?? "");
+                      }}
+                      className="rounded-xl px-4 py-2.5 text-sm transition-colors"
+                      style={{
+                        background: "var(--color-surface)",
+                        border: "1px solid var(--color-border)",
+                        color: "var(--color-ink-muted)",
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <ImageUpload
                 label="Driving license photo"
@@ -620,24 +692,6 @@ export default function ProfilePage() {
                   if (data.success) setProfile(data.user);
                 }}
               />
-
-              <button
-                onClick={savePersonalInfo}
-                disabled={savingInfo}
-                className="btn-go w-full py-3 text-sm flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                {savingInfo ? (
-                  <>
-                    <Loader2 size={14} className="animate-spin" /> Saving...
-                  </>
-                ) : infoSaved ? (
-                  <>
-                    <Check size={14} /> Saved!
-                  </>
-                ) : (
-                  "Save changes"
-                )}
-              </button>
             </div>
           </Section>
 
