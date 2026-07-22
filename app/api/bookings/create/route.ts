@@ -5,6 +5,7 @@ import { connectDb } from "@/lib/db";
 import { haversineDistanceKm } from "@/lib/geo";
 import Ride from "@/models/Ride";
 import Booking from "@/models/Booking";
+import DriverRoutePoint from "@/models/DriverRoutePoint";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -15,7 +16,8 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { rideId, seatsBooked, pickupInfo, dropInfo } = await req.json();
+  const { rideId, seatsBooked, pickupInfo, dropInfo, pickupLabel, dropLabel } =
+    await req.json();
 
   if (!rideId || !seatsBooked || !pickupInfo || !dropInfo) {
     return NextResponse.json(
@@ -68,7 +70,39 @@ export async function POST(req: NextRequest) {
     dropInfo.latitude,
     dropInfo.longitude,
   );
-  const fare = Math.round(segmentDistanceKm * ride.pricePerKm * seatsBooked);
+
+  const pricePerKm =
+    ride.pricePerKm != null && ride.pricePerKm > 0
+      ? ride.pricePerKm
+      : ride.distanceKm != null && ride.distanceKm > 0
+        ? ride.price / ride.distanceKm
+        : ride.price;
+
+  const fare = Math.round(segmentDistanceKm * pricePerKm * seatsBooked);
+
+  // Find where this pickup falls along the driver's route, so the driver's
+  // dashboard can list stops in the order they'll actually be reached.
+  const dateStr = new Date(ride.date).toISOString().slice(0, 10);
+  let pickupSequence: number | null = null;
+  try {
+    const nearestPoint = await DriverRoutePoint.findOne({
+      rideId,
+      date: dateStr,
+      location: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: [pickupInfo.longitude, pickupInfo.latitude],
+          },
+          $maxDistance: 3000, // 3km — generous, this is just for ordering, not matching
+        },
+      },
+    }).lean();
+    if (nearestPoint) pickupSequence = nearestPoint.sequence;
+  } catch (err) {
+    console.error("Could not determine pickup sequence:", err);
+    // Non-fatal — booking still proceeds, stop just won't have an order
+  }
 
   try {
     const booking = await Booking.create({
@@ -76,7 +110,10 @@ export async function POST(req: NextRequest) {
       riderId: (session.user as any).id,
       seatsBooked,
       pickupInfo,
+      pickupLabel: pickupLabel || null,
       dropInfo,
+      dropLabel: dropLabel || null,
+      pickupSequence,
       segmentDistanceKm,
       fare,
       status: "confirmed",

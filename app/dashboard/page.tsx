@@ -22,6 +22,9 @@ import {
   CheckCircle2,
   XCircle,
   AlertCircle,
+  ChevronDown,
+  MapPin,
+  Loader2,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -453,6 +456,168 @@ function BookingsTab() {
 
 // ─── My Rides Tab ─────────────────────────────────────────────────────────────
 
+// ── Types for stops ───────────────────────────────────────────────────────────
+
+interface Stop {
+  key: string;
+  latitude: number;
+  longitude: number;
+  label: string | null;
+  pickupSequence: number | null;
+  riders: {
+    name: string;
+    phone: string;
+    seatsBooked: number;
+    bookingId: string;
+  }[];
+  totalSeats: number;
+}
+
+// ── Stops list — expandable per ride card ─────────────────────────────────────
+
+function StopsList({ rideId }: { rideId: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const [stops, setStops] = useState<Stop[] | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function toggle() {
+    if (!expanded && stops === null) {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/rides/${rideId}/stops`);
+        const data = await res.json();
+        if (data.success) setStops(data.stops);
+      } finally {
+        setLoading(false);
+      }
+    }
+    setExpanded(!expanded);
+  }
+
+  return (
+    <div
+      className="mt-4"
+      style={{ borderTop: "1px solid var(--color-border)", paddingTop: 16 }}
+    >
+      <button
+        onClick={toggle}
+        className="flex w-full items-center justify-between text-sm font-semibold transition-colors"
+        style={{ color: "var(--color-ink-muted)" }}
+      >
+        <span className="flex items-center gap-1.5">
+          <MapPin size={13} style={{ color: "var(--color-go)" }} />
+          Pickup stops
+        </span>
+        <ChevronDown
+          size={15}
+          style={{
+            transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
+            transition: "transform 0.2s",
+            color: "var(--color-ink-dim)",
+          }}
+        />
+      </button>
+
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="mt-3 space-y-2">
+              {loading ? (
+                <div
+                  className="flex items-center gap-2 text-sm"
+                  style={{ color: "var(--color-ink-dim)" }}
+                >
+                  <Loader2 size={13} className="animate-spin" /> Loading
+                  stops...
+                </div>
+              ) : !stops || stops.length === 0 ? (
+                <p
+                  className="text-sm"
+                  style={{ color: "var(--color-ink-dim)" }}
+                >
+                  No confirmed bookings yet.
+                </p>
+              ) : (
+                stops.map((stop, idx) => (
+                  <div
+                    key={stop.key}
+                    className="rounded-xl p-3"
+                    style={{
+                      background: "var(--color-surface-2)",
+                      border: "1px solid var(--color-border)",
+                    }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+                        style={{
+                          background: "var(--color-go)",
+                          color: "#0f0f0f",
+                        }}
+                      >
+                        {idx + 1}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p
+                          className="text-sm font-medium truncate"
+                          style={{ color: "var(--color-ink)" }}
+                        >
+                          {stop.label ??
+                            `${stop.latitude.toFixed(4)}, ${stop.longitude.toFixed(4)}`}
+                        </p>
+                        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1">
+                          {stop.riders.map((r) => (
+                            <span
+                              key={r.bookingId}
+                              className="flex items-center gap-1 text-xs"
+                              style={{ color: "var(--color-ink-muted)" }}
+                            >
+                              <Users
+                                size={11}
+                                style={{ color: "var(--color-ink-dim)" }}
+                              />
+                              {r.name} ({r.seatsBooked})
+                              {r.phone && (
+                                <a
+                                  href={`tel:${r.phone}`}
+                                  className="ml-1"
+                                  style={{ color: "var(--color-go)" }}
+                                >
+                                  <Phone size={11} />
+                                </a>
+                              )}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <span
+                        className="shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold"
+                        style={{
+                          background: "var(--color-go-glow)",
+                          color: "var(--color-go)",
+                        }}
+                      >
+                        {stop.totalSeats} seat{stop.totalSeats !== 1 ? "s" : ""}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ── My Rides Tab ─────────────────────────────────────────────────────────────
+
 function MyRidesTab() {
   const [rides, setRides] = useState<DriverRide[]>([]);
   const [loading, setLoading] = useState(true);
@@ -650,12 +815,14 @@ function MyRidesTab() {
               />
             </div>
           </div>
+
+          {/* Expandable pickup stops — only useful once someone has booked */}
+          {r.bookingCount > 0 && <StopsList rideId={r._id} />}
         </motion.div>
       ))}
     </div>
   );
 }
-
 // ─── Dashboard Page ───────────────────────────────────────────────────────────
 
 type Tab = "bookings" | "rides";

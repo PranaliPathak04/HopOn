@@ -472,14 +472,8 @@ export default function SearchPage() {
               >
                 <RideCard
                   ride={ride}
-                  pickup={{
-                    latitude: pickup!.latitude,
-                    longitude: pickup!.longitude,
-                  }}
-                  destination={{
-                    latitude: destination!.latitude,
-                    longitude: destination!.longitude,
-                  }}
+                  pickup={pickup!}
+                  destination={destination!}
                 />
               </motion.div>
             ))}

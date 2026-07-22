@@ -11,10 +11,16 @@ const BookingSchema = new Schema(
       latitude: { type: Number, required: true },
       longitude: { type: Number, required: true },
     },
+
+    pickupLabel: { type: String, default: null }, //human readable address for rider's pickup point
     dropInfo: {
       latitude: { type: Number, required: true },
       longitude: { type: Number, required: true },
     },
+
+    dropLabel: { type: String, default: null },
+    //human readable address for rider's drop point
+    pickupSequence: { type: Number, default: null }, //sequence of the pickup point in the ride's route
 
     segmentDistanceKm: { type: Number, required: true },
     fare: { type: Number, required: true },

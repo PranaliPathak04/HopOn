@@ -13,11 +13,12 @@ import {
   Car,
 } from "lucide-react";
 import type { RideSearchResult } from "@/types";
+import type { GeoResult } from "@/lib/geocode";
 
 interface Props {
   ride: RideSearchResult;
-  pickup: { latitude: number; longitude: number };
-  destination: { latitude: number; longitude: number };
+  pickup: GeoResult;
+  destination: GeoResult;
 }
 
 export default function RideCard({ ride, pickup, destination }: Props) {
@@ -39,6 +40,8 @@ export default function RideCard({ ride, pickup, destination }: Props) {
           seatsBooked: 1,
           pickupInfo: pickup,
           dropInfo: destination,
+          pickupLabel: pickup.label,
+          dropLabel: destination.label,
         }),
       });
       const data = await res.json();
