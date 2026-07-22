@@ -69,6 +69,11 @@ function formatDate(iso: string) {
   });
 }
 
+// Status colors now follow a clear rule:
+// teal (--color-tide)  = confirmed / active / paid — "this is good, it's happening"
+// red  (--color-spark) = cancelled / full — "this needs attention, negative"
+// gold (--color-go)    = pending — "action needed from you"
+// muted gray           = neutral/past states (completed, refunded)
 function StatusPill({ status }: { status: string }) {
   const map: Record<
     string,
@@ -83,9 +88,9 @@ function StatusPill({ status }: { status: string }) {
     confirmed: {
       label: "Confirmed",
       icon: <CheckCircle2 size={11} />,
-      bg: "rgba(163,230,53,0.1)",
-      color: "var(--color-go)",
-      border: "rgba(163,230,53,0.2)",
+      bg: "rgba(20,184,166,0.1)",
+      color: "var(--color-tide)",
+      border: "rgba(20,184,166,0.2)",
     },
     completed: {
       label: "Completed",
@@ -97,37 +102,37 @@ function StatusPill({ status }: { status: string }) {
     cancelled: {
       label: "Cancelled",
       icon: <XCircle size={11} />,
-      bg: "rgba(255,107,53,0.1)",
-      color: "var(--color-signal)",
-      border: "rgba(255,107,53,0.2)",
+      bg: "rgba(244,63,94,0.1)",
+      color: "var(--color-spark)",
+      border: "rgba(244,63,94,0.2)",
     },
     active: {
       label: "Active",
       icon: <CheckCircle2 size={11} />,
-      bg: "rgba(163,230,53,0.1)",
-      color: "var(--color-go)",
-      border: "rgba(163,230,53,0.2)",
+      bg: "rgba(20,184,166,0.1)",
+      color: "var(--color-tide)",
+      border: "rgba(20,184,166,0.2)",
     },
     full: {
       label: "Full",
       icon: <Users size={11} />,
-      bg: "rgba(255,107,53,0.1)",
-      color: "var(--color-signal)",
-      border: "rgba(255,107,53,0.2)",
+      bg: "rgba(244,63,94,0.1)",
+      color: "var(--color-spark)",
+      border: "rgba(244,63,94,0.2)",
     },
     pending: {
       label: "Pending",
       icon: <AlertCircle size={11} />,
-      bg: "rgba(255,107,53,0.08)",
-      color: "var(--color-signal)",
-      border: "rgba(255,107,53,0.15)",
+      bg: "rgba(251,191,36,0.08)",
+      color: "var(--color-go)",
+      border: "rgba(251,191,36,0.15)",
     },
     paid: {
       label: "Paid",
       icon: <CheckCircle2 size={11} />,
-      bg: "rgba(163,230,53,0.1)",
-      color: "var(--color-go)",
-      border: "rgba(163,230,53,0.2)",
+      bg: "rgba(20,184,166,0.1)",
+      color: "var(--color-tide)",
+      border: "rgba(20,184,166,0.2)",
     },
     refunded: {
       label: "Refunded",
@@ -453,7 +458,7 @@ function MyRidesTab() {
 
   return (
     <div className="space-y-4">
-      {/* Summary strip */}
+      {/* Summary strip — each stat gets its own color so they're easy to tell apart at a glance */}
       <motion.div
         className="grid grid-cols-3 gap-3"
         initial={{ opacity: 0, y: 12 }}
@@ -465,18 +470,21 @@ function MyRidesTab() {
             icon: <Car size={16} />,
             label: "Total rides",
             value: rides.length,
+            color: "var(--color-ink)",
           },
           {
             icon: <TrendingUp size={16} />,
             label: "Active now",
             value: activeCount,
+            color: "var(--color-tide)",
           },
           {
             icon: <IndianRupee size={16} />,
             label: "Est. earnings",
             value: `₹${totalRevenue}`,
+            color: "var(--color-go)",
           },
-        ].map(({ icon, label, value }) => (
+        ].map(({ icon, label, value, color }) => (
           <div
             key={label}
             className="rounded-xl p-4 text-center"
@@ -485,15 +493,12 @@ function MyRidesTab() {
               border: "1px solid var(--color-border)",
             }}
           >
-            <div
-              className="flex justify-center mb-1"
-              style={{ color: "var(--color-go)" }}
-            >
+            <div className="flex justify-center mb-1" style={{ color }}>
               {icon}
             </div>
             <p
               className="font-display text-xl font-extrabold"
-              style={{ color: "var(--color-go)" }}
+              style={{ color }}
             >
               {value}
             </p>
@@ -569,7 +574,7 @@ function MyRidesTab() {
             ))}
           </div>
 
-          {/* Seat fill bar */}
+          {/* Seat fill bar — teal, since this shows live status, not an action to take */}
           <div className="mt-4">
             <div
               className="mb-1.5 flex justify-between text-xs"
@@ -588,7 +593,7 @@ function MyRidesTab() {
             >
               <motion.div
                 className="h-full rounded-full"
-                style={{ background: "var(--color-go)" }}
+                style={{ background: "var(--color-tide)" }}
                 initial={{ width: 0 }}
                 animate={{
                   width: `${((r.seats - r.seatsAvailable) / r.seats) * 100}%`,
@@ -667,27 +672,27 @@ export default function DashboardPage() {
             <Link
               href="/profile"
               style={{ color: "var(--color-ink-muted)" }}
-              className="nav-link transition-colors"
+              className="nav-link px-1 py-2"
             >
               Profile
             </Link>
             <Link
               href="/search"
-              className="hidden items-center gap-1.5 text-sm transition-colors hover:text-white sm:flex"
+              className="nav-link hidden sm:flex items-center gap-1.5 px-1 py-2 "
               style={{ color: "var(--color-ink-muted)" }}
             >
               <Search size={14} /> Find a ride
             </Link>
             <Link
               href="/publish"
-              className="btn-outline flex items-center gap-1.5 px-4 py-1.5 text-sm"
+              className="btn-outline-tide flex items-center gap-1.5 px-4 py-1.5 text-sm "
             >
               <Plus size={14} /> Publish ride
             </Link>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
               className="flex items-center gap-1.5 text-sm transition-colors hover:text-white"
-              style={{ color: "var(--color-ink-dim)" }}
+              style={{ color: "var(--color-ink-muted)" }}
             >
               <LogOut size={14} />
               <span className="hidden sm:block">Sign out</span>

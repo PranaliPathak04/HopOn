@@ -27,6 +27,8 @@ const RideSchema = new Schema(
 
     pricingModel: { type: String, enum: ["per_km"], default: "per_km" },
     price: { type: Number, required: true },
+    distanceKm: { type: Number, required: true }, // total route distance
+    pricePerKm: { type: Number, required: true }, // ₹ per km, drives fare calc
 
     status: {
       type: String,

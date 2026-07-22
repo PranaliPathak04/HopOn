@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     dropInfo.latitude,
     dropInfo.longitude,
   );
-  const fare = Math.round(segmentDistanceKm * ride.price * seatsBooked);
+  const fare = Math.round(segmentDistanceKm * ride.pricePerKm * seatsBooked);
 
   try {
     const booking = await Booking.create({

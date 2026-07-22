@@ -7,8 +7,9 @@ import Ride from "@/models/Ride";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return NextResponse.json(
@@ -19,7 +20,7 @@ export async function POST(
 
   await connectDb();
 
-  const booking = await Booking.findById(params.id);
+  const booking = await Booking.findById(id);
   if (!booking) {
     return NextResponse.json(
       { success: false, message: "Booking not found" },

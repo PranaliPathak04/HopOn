@@ -53,6 +53,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const { distanceKm } = body; // pass this from frontend, from routeInfo.distanceKm
+  const pricePerKm = distanceKm > 0 ? price / distanceKm : 0;
+
   const ride = await Ride.create({
     driverId: driver._id,
     driverName: driver.name,
@@ -65,6 +68,9 @@ export async function POST(req: NextRequest) {
     date,
     time,
     price,
+    distanceKm,
+    pricePerKm,
+    encodedPolyline: body.encodedPolyline || null,
     status: "active",
   });
 

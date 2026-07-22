@@ -8,8 +8,9 @@ import Vehicle from "@/models/Vehicle";
 // Set a vehicle as default
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return NextResponse.json(
@@ -23,7 +24,7 @@ export async function PATCH(
   const driverId = (session.user as any).id;
 
   const vehicle = await Vehicle.findOne({
-    _id: params.id,
+    _id: id,
     driverId,
     isActive: true,
   });
@@ -37,7 +38,7 @@ export async function PATCH(
 
   // Unset all other defaults for this driver
   await Vehicle.updateMany(
-    { driverId, _id: { $ne: params.id } },
+    { driverId, _id: { $ne: id } },
     { $set: { isDefault: false } },
   );
 
@@ -58,8 +59,9 @@ export async function PATCH(
 // Soft delete — sets isActive to false
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return NextResponse.json(
@@ -73,7 +75,7 @@ export async function DELETE(
   const driverId = (session.user as any).id;
 
   const vehicle = await Vehicle.findOne({
-    _id: params.id,
+    _id: id,
     driverId,
     isActive: true,
   });
@@ -85,13 +87,15 @@ export async function DELETE(
     );
   }
 
+  const wasDefault = vehicle.isDefault;
+
   // Soft delete
   vehicle.isActive = false;
   vehicle.isDefault = false;
   await vehicle.save();
 
   // If this was the default, make the next available vehicle the default
-  if (vehicle.isDefault) {
+  if (wasDefault) {
     const nextVehicle = await Vehicle.findOne({ driverId, isActive: true });
     if (nextVehicle) {
       nextVehicle.isDefault = true;
