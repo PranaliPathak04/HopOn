@@ -5,6 +5,7 @@ import { connectDb } from "@/lib/db";
 import Ride from "@/models/Ride";
 import DriverRoutePoint from "@/models/DriverRoutePoint";
 import User from "@/models/User";
+import Vehicle from "@/models/Vehicle";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -21,10 +22,12 @@ export async function POST(req: NextRequest) {
     destination,
     routeCoordinates, // [lng, lat][] from OSRM
     vehicle,
+    vehicleId,
     seats,
     price,
     date,
     time,
+    distanceKm,
   } = body;
 
   if (
@@ -53,7 +56,17 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { distanceKm } = body; // pass this from frontend, from routeInfo.distanceKm
+  // Look up the vehicle's license plate to denormalize onto the Ride —
+  // avoids an extra lookup every time a rider views their booking.
+  let vehicleNumber: string | null = null;
+  if (vehicleId) {
+    const vehicleDoc = await Vehicle.findOne({
+      _id: vehicleId,
+      driverId: driver._id,
+    });
+    if (vehicleDoc) vehicleNumber = vehicleDoc.licensePlate;
+  }
+
   const pricePerKm = distanceKm > 0 ? price / distanceKm : 0;
 
   const ride = await Ride.create({
@@ -63,6 +76,8 @@ export async function POST(req: NextRequest) {
     pickupInfo: pickup,
     destInfo: destination,
     vehicle,
+    vehicleId: vehicleId || null,
+    vehicleNumber,
     seats,
     seatsAvailable: seats,
     date,

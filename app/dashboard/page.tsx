@@ -7,7 +7,8 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Car,
-  MapPin,
+  Phone,
+  Hash,
   Clock,
   Calendar,
   Users,
@@ -38,6 +39,7 @@ interface BookingWithRide {
     driverName: string;
     driverPhone: string;
     vehicle: string;
+    vehicleNumber: string | null;
     date: string;
     time: string;
     price: number;
@@ -69,11 +71,6 @@ function formatDate(iso: string) {
   });
 }
 
-// Status colors now follow a clear rule:
-// teal (--color-tide)  = confirmed / active / paid — "this is good, it's happening"
-// red  (--color-spark) = cancelled / full — "this needs attention, negative"
-// gold (--color-go)    = pending — "action needed from you"
-// muted gray           = neutral/past states (completed, refunded)
 function StatusPill({ status }: { status: string }) {
   const map: Record<
     string,
@@ -158,8 +155,6 @@ function StatusPill({ status }: { status: string }) {
   );
 }
 
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
-
 function SkeletonCard() {
   return (
     <div
@@ -198,8 +193,6 @@ function SkeletonCard() {
     </div>
   );
 }
-
-// ─── Empty State ──────────────────────────────────────────────────────────────
 
 function EmptyState({
   icon: Icon,
@@ -330,12 +323,44 @@ function BookingsTab() {
                 className="flex items-center gap-1.5 text-sm mt-0.5"
                 style={{ color: "var(--color-ink-muted)" }}
               >
-                <Car size={12} />
-                {b.ride?.vehicle ?? "—"}
+                <Car size={12} /> {b.ride?.vehicle ?? "—"}
               </p>
             </div>
             <StatusPill status={b.status} />
           </div>
+
+          {/* Driver contact + car number row */}
+          {(b.ride?.driverPhone || b.ride?.vehicleNumber) && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {b.ride?.driverPhone && (
+                <a
+                  href={`tel:${b.ride.driverPhone}`}
+                  className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors"
+                  style={{
+                    background: "var(--color-surface-2)",
+                    border: "1px solid var(--color-border)",
+                    color: "var(--color-ink-muted)",
+                  }}
+                >
+                  <Phone size={11} style={{ color: "var(--color-go)" }} />
+                  {b.ride.driverPhone}
+                </a>
+              )}
+              {b.ride?.vehicleNumber && (
+                <span
+                  className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold"
+                  style={{
+                    background: "var(--color-surface-2)",
+                    border: "1px solid var(--color-border)",
+                    color: "var(--color-ink-muted)",
+                  }}
+                >
+                  <Hash size={11} style={{ color: "var(--color-go)" }} />
+                  {b.ride.vehicleNumber}
+                </span>
+              )}
+            </div>
+          )}
 
           <div className="my-4 route-line" />
 
@@ -384,17 +409,25 @@ function BookingsTab() {
             ))}
           </div>
 
+          {/* Total distance the rider travels — separate, clear row */}
+          <div
+            className="mt-3 flex items-center gap-1.5 text-xs"
+            style={{ color: "var(--color-ink-dim)" }}
+          >
+            <Route size={11} />
+            You'll travel{" "}
+            <span style={{ color: "var(--color-ink-muted)", fontWeight: 600 }}>
+              {b.segmentDistanceKm.toFixed(1)} km
+            </span>{" "}
+            on this trip
+          </div>
+
           <div
             className="mt-4 flex items-center justify-between gap-3 pt-4"
             style={{ borderTop: "1px solid var(--color-border)" }}
           >
-            <p
-              className="flex items-center gap-1.5 text-xs"
-              style={{ color: "var(--color-ink-dim)" }}
-            >
-              <Route size={11} />
-              {b.segmentDistanceKm.toFixed(1)} km · Booked{" "}
-              {formatDate(b.createdAt)}
+            <p className="text-xs" style={{ color: "var(--color-ink-dim)" }}>
+              Booked {formatDate(b.createdAt)}
             </p>
             {b.status === "confirmed" && (
               <button
@@ -458,7 +491,6 @@ function MyRidesTab() {
 
   return (
     <div className="space-y-4">
-      {/* Summary strip — each stat gets its own color so they're easy to tell apart at a glance */}
       <motion.div
         className="grid grid-cols-3 gap-3"
         initial={{ opacity: 0, y: 12 }}
@@ -541,7 +573,20 @@ function MyRidesTab() {
                 <Clock size={12} /> {r.time}
               </p>
             </div>
-            <StatusPill status={r.status} />
+            <div className="text-right shrink-0">
+              <StatusPill status={r.status} />
+              <p
+                className="mt-1.5 flex items-center justify-end gap-1 text-xs font-semibold"
+                style={{ color: "var(--color-go)" }}
+              >
+                <IndianRupee size={11} /> ₹{r.price}{" "}
+                <span
+                  style={{ color: "var(--color-ink-dim)", fontWeight: 400 }}
+                >
+                  / seat (full route)
+                </span>
+              </p>
+            </div>
           </div>
 
           <div className="my-4 route-line" />
@@ -574,7 +619,6 @@ function MyRidesTab() {
             ))}
           </div>
 
-          {/* Seat fill bar — teal, since this shows live status, not an action to take */}
           <div className="mt-4">
             <div
               className="mb-1.5 flex justify-between text-xs"
@@ -652,7 +696,6 @@ export default function DashboardPage() {
       className="min-h-screen"
       style={{ background: "var(--color-paper)", color: "var(--color-ink)" }}
     >
-      {/* Nav */}
       <header
         style={{
           borderBottom: "1px solid var(--color-border)",
@@ -678,14 +721,14 @@ export default function DashboardPage() {
             </Link>
             <Link
               href="/search"
-              className="nav-link hidden sm:flex items-center gap-1.5 px-1 py-2 "
+              className="nav-link hidden sm:flex items-center gap-1.5 px-1 py-2"
               style={{ color: "var(--color-ink-muted)" }}
             >
               <Search size={14} /> Find a ride
             </Link>
             <Link
               href="/publish"
-              className="btn-outline-tide flex items-center gap-1.5 px-4 py-1.5 text-sm "
+              className="btn-outline-tide flex items-center gap-1.5 px-4 py-1.5 text-sm"
             >
               <Plus size={14} /> Publish ride
             </Link>
@@ -702,7 +745,6 @@ export default function DashboardPage() {
       </header>
 
       <main className="mx-auto max-w-2xl px-5 py-10">
-        {/* Greeting */}
         <motion.div
           className="mb-8"
           initial={{ opacity: 0, y: 16 }}
@@ -720,7 +762,6 @@ export default function DashboardPage() {
           </p>
         </motion.div>
 
-        {/* Tab switcher */}
         <motion.div
           className="mb-6 flex gap-1 rounded-xl p-1"
           style={{ background: "var(--color-surface)" }}
@@ -752,7 +793,6 @@ export default function DashboardPage() {
           ))}
         </motion.div>
 
-        {/* Tab content */}
         <AnimatePresence mode="wait">
           <motion.div
             key={tab}

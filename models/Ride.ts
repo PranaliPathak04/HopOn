@@ -19,6 +19,8 @@ const RideSchema = new Schema(
     encodedPolyline: { type: String, default: null },
 
     vehicle: { type: String, required: true },
+    vehicleNumber: { type: String, default: null },
+    vehicleId: { type: Schema.Types.ObjectId, ref: "Vehicle", default: null },
     seats: { type: Number, required: true },
     seatsAvailable: { type: Number, required: true },
 
