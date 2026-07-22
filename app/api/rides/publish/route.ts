@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
     date,
     time,
     distanceKm,
+    durationMin,
   } = body;
 
   if (
@@ -85,6 +86,7 @@ export async function POST(req: NextRequest) {
     price,
     distanceKm,
     pricePerKm,
+    durationMin: durationMin,
     encodedPolyline: body.encodedPolyline || null,
     status: "active",
   });

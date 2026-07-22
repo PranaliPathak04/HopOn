@@ -176,6 +176,7 @@ export default function PublishRidePage() {
           date,
           time,
           distanceKm: routeInfo?.distanceKm,
+          durationMin: routeInfo?.durationMin,
         }),
       });
       const data = await res.json();

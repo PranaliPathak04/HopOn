@@ -26,6 +26,7 @@ const RideSchema = new Schema(
 
     date: { type: Date, required: true },
     time: { type: String, required: true },
+    durationMin: { type: Number, default: null },
 
     pricingModel: { type: String, enum: ["per_km"], default: "per_km" },
     price: { type: Number, required: true },
