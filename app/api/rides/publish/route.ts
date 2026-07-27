@@ -74,6 +74,7 @@ export async function POST(req: NextRequest) {
     driverId: driver._id,
     driverName: driver.name,
     driverPhone: driver.phone,
+    driverPhoto: driver.photoUrl ?? null,
     pickupInfo: pickup,
     destInfo: destination,
     vehicle,

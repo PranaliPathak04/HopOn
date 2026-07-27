@@ -12,6 +12,7 @@ export interface Ride {
   driverId: string;
   driverName: string;
   driverPhone: string;
+  driverPhoto: string | null;
 
   pickupInfo: Coords;
   destInfo: Coords;

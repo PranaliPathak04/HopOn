@@ -13,6 +13,7 @@ const RideSchema = new Schema(
     driverId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     driverName: { type: String, required: true },
     driverPhone: { type: String, required: true },
+    driverPhoto: { type: String, default: null }, // Cloudinary URL (added later)
 
     pickupInfo: { type: CoordsSchema, required: true },
     destInfo: { type: CoordsSchema, required: true },

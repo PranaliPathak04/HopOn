@@ -142,6 +142,7 @@ export async function POST(req: NextRequest) {
         driverId: ride.driverId.toString(),
         driverName: ride.driverName,
         driverPhone: ride.driverPhone,
+        driverPhoto: ride.driverPhoto ?? null,
         pickupInfo: ride.pickupInfo,
         destInfo: ride.destInfo,
         encodedPolyline: ride.encodedPolyline ?? null,

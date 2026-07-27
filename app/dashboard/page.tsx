@@ -41,6 +41,7 @@ interface BookingWithRide {
   ride: {
     driverName: string;
     driverPhone: string;
+    driverPhoto?: string | null;
     vehicle: string;
     vehicleNumber: string | null;
     date: string;
@@ -315,19 +316,40 @@ function BookingsTab() {
           transition={{ duration: 0.3, delay: i * 0.06 }}
         >
           <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <p
-                className="font-display font-bold"
-                style={{ color: "var(--color-ink)" }}
-              >
-                {b.ride?.driverName ?? "Unknown driver"}
-              </p>
-              <p
-                className="flex items-center gap-1.5 text-sm mt-0.5"
-                style={{ color: "var(--color-ink-muted)" }}
-              >
-                <Car size={12} /> {b.ride?.vehicle ?? "—"}
-              </p>
+            <div className="flex min-w-0 items-center gap-3">
+              {b.ride?.driverPhoto ? (
+                <img
+                  src={b.ride.driverPhoto}
+                  alt={b.ride.driverName}
+                  className="h-10 w-10 rounded-full object-cover shrink-0"
+                  style={{ border: "2px solid var(--color-border)" }}
+                />
+              ) : (
+                <div
+                  className="h-10 w-10 shrink-0 rounded-full flex items-center justify-center font-bold text-sm"
+                  style={{
+                    background: "var(--color-surface-2)",
+                    border: "2px solid var(--color-border)",
+                    color: "var(--color-ink-muted)",
+                  }}
+                >
+                  {(b.ride?.driverName ?? "?").charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div className="min-w-0">
+                <p
+                  className="font-display font-bold"
+                  style={{ color: "var(--color-ink)" }}
+                >
+                  {b.ride?.driverName ?? "Unknown driver"}
+                </p>
+                <p
+                  className="flex items-center gap-1.5 text-sm mt-0.5"
+                  style={{ color: "var(--color-ink-muted)" }}
+                >
+                  <Car size={12} /> {b.ride?.vehicle ?? "—"}
+                </p>
+              </div>
             </div>
             <StatusPill status={b.status} />
           </div>
@@ -564,7 +586,7 @@ function StopsList({ rideId }: { rideId: string }) {
                       </div>
                       <div className="min-w-0 flex-1">
                         <p
-                          className="text-sm font-medium truncate"
+                          className="text-sm font-medium"
                           style={{ color: "var(--color-ink)" }}
                         >
                           {stop.label ??
