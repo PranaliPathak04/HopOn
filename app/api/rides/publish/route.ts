@@ -69,6 +69,56 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Prevent a driver from publishing two rides that overlap in time — no
+  // one can physically drive two routes at once. We treat each ride as
+  // occupying [start, start + duration] and reject if the new ride's
+  // window overlaps any existing active/full ride's window on the same day.
+  // Falls back to a 60-minute assumed duration for rides that don't have
+  // routeInfo.durationMin yet (shouldn't happen for new publishes, but be safe).
+  const DEFAULT_DURATION_MIN = 60;
+  const newDurationMin =
+    body.durationMin && body.durationMin > 0
+      ? body.durationMin
+      : DEFAULT_DURATION_MIN;
+  const newRideEnd = new Date(
+    rideDateTime.getTime() + newDurationMin * 60 * 1000,
+  );
+
+  const dayStart = new Date(rideDateTime);
+  dayStart.setHours(0, 0, 0, 0);
+  const dayEnd = new Date(rideDateTime);
+  dayEnd.setHours(23, 59, 59, 999);
+
+  const sameDayRides = await Ride.find({
+    driverId: driver._id,
+    status: { $in: ["active", "full"] },
+    date: { $gte: dayStart, $lte: dayEnd },
+  }).lean();
+
+  for (const existing of sameDayRides) {
+    const [eh, em] = String(existing.time).split(":").map(Number);
+    const existingStart = new Date(existing.date);
+    existingStart.setHours(eh || 0, em || 0, 0, 0);
+    const existingDuration =
+      existing.durationMin && existing.durationMin > 0
+        ? existing.durationMin
+        : DEFAULT_DURATION_MIN;
+    const existingEnd = new Date(
+      existingStart.getTime() + existingDuration * 60 * 1000,
+    );
+
+    const overlaps = rideDateTime < existingEnd && existingStart < newRideEnd;
+    if (overlaps) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: `You already have a ride scheduled around this time (${existing.time} on ${existingStart.toLocaleDateString("en-IN")}). You can't publish two overlapping rides.`,
+        },
+        { status: 409 },
+      );
+    }
+  }
+
   // Look up the vehicle's license plate to denormalize onto the Ride —
   // avoids an extra lookup every time a rider views their booking.
   let vehicleNumber: string | null = null;
