@@ -177,6 +177,8 @@ export default function PublishRidePage() {
           time,
           distanceKm: routeInfo?.distanceKm,
           durationMin: routeInfo?.durationMin,
+          pickupLabel: pickup.label,
+          destLabel: destination.label,
         }),
       });
       const data = await res.json();

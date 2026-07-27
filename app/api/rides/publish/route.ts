@@ -29,6 +29,8 @@ export async function POST(req: NextRequest) {
     time,
     distanceKm,
     durationMin,
+    pickupLabel,
+    destLabel,
   } = body;
 
   if (
@@ -138,7 +140,9 @@ export async function POST(req: NextRequest) {
     driverPhone: driver.phone,
     driverPhoto: driver.photoUrl ?? null,
     pickupInfo: pickup,
+    pickupLabel: pickupLabel || null,
     destInfo: destination,
+    destLabel: destLabel || null,
     vehicle,
     vehicleId: vehicleId || null,
     vehicleNumber,

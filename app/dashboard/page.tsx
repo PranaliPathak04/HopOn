@@ -35,6 +35,8 @@ interface BookingWithRide {
   seatsBooked: number;
   segmentDistanceKm: number;
   fare: number;
+  pickupLabel?: string | null;
+  dropLabel?: string | null;
   status: "confirmed" | "cancelled" | "completed";
   paymentStatus: "pending" | "paid" | "refunded";
   createdAt: string;
@@ -54,6 +56,8 @@ interface BookingWithRide {
 interface DriverRide {
   _id: string;
   vehicle: string;
+  pickupLabel: string | null;
+  destLabel: string | null;
   seats: number;
   seatsAvailable: number;
   date: string;
@@ -384,6 +388,55 @@ function BookingsTab() {
                   {b.ride.vehicleNumber}
                 </span>
               )}
+            </div>
+          )}
+          {/* Pickup & drop locations */}
+          {(b.pickupLabel || b.dropLabel) && (
+            <div className="mt-3 flex gap-3">
+              <div className="flex flex-col items-center pt-1">
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: "var(--color-go)",
+                    boxShadow: "0 0 6px var(--color-go)",
+                    flexShrink: 0,
+                  }}
+                />
+                <span
+                  style={{
+                    width: 2,
+                    height: 24,
+                    background: "var(--color-border)",
+                    margin: "3px 0",
+                  }}
+                />
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: "var(--color-signal)",
+                    boxShadow: "0 0 6px var(--color-signal)",
+                    flexShrink: 0,
+                  }}
+                />
+              </div>
+              <div className="flex-1 min-w-0 space-y-2.5">
+                <p
+                  className="text-xs "
+                  style={{ color: "var(--color-ink-muted)" }}
+                >
+                  {b.pickupLabel ?? "Pickup location"}
+                </p>
+                <p
+                  className="text-xs "
+                  style={{ color: "var(--color-ink-muted)" }}
+                >
+                  {b.dropLabel ?? "Drop location"}
+                </p>
+              </div>
             </div>
           )}
 
@@ -775,6 +828,56 @@ function MyRidesTab() {
               </p>
             </div>
           </div>
+
+          {/* Pickup & drop locations */}
+          {(r.pickupLabel || r.destLabel) && (
+            <div className="mt-3 flex gap-3">
+              <div className="flex flex-col items-center pt-1">
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: "var(--color-go)",
+                    boxShadow: "0 0 6px var(--color-go)",
+                    flexShrink: 0,
+                  }}
+                />
+                <span
+                  style={{
+                    width: 2,
+                    height: 24,
+                    background: "var(--color-border)",
+                    margin: "3px 0",
+                  }}
+                />
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: "var(--color-signal)",
+                    boxShadow: "0 0 6px var(--color-signal)",
+                    flexShrink: 0,
+                  }}
+                />
+              </div>
+              <div className="flex-1 min-w-0 space-y-2.5">
+                <p
+                  className="text-xs"
+                  style={{ color: "var(--color-ink-muted)" }}
+                >
+                  {r.pickupLabel ?? "Pickup location"}
+                </p>
+                <p
+                  className="text-xs"
+                  style={{ color: "var(--color-ink-muted)" }}
+                >
+                  {r.destLabel ?? "Drop location"}
+                </p>
+              </div>
+            </div>
+          )}
 
           <div className="my-4 route-line" />
 
