@@ -643,6 +643,7 @@ export default function PublishRidePage() {
                     style={{ color: "var(--color-ink)" }}
                     type="date"
                     value={date}
+                    min={new Date().toISOString().split("T")[0]}
                     onChange={(e) => setDate(e.target.value)}
                     required
                   />

@@ -56,6 +56,18 @@ export async function POST(req: NextRequest) {
       { status: 404 },
     );
   }
+  // Validate that the ride's date and time is not in the past (with a small grace period)
+  const [hh, mm] = String(time).split(":").map(Number);
+  const rideDateTime = new Date(date);
+  rideDateTime.setHours(hh || 0, mm || 0, 0, 0);
+
+  const gracePeriodMs = 2 * 60 * 1000; // 2 minutes
+  if (rideDateTime.getTime() < Date.now() - gracePeriodMs) {
+    return NextResponse.json(
+      { success: false, message: "You can't publish a ride in the past" },
+      { status: 400 },
+    );
+  }
 
   // Look up the vehicle's license plate to denormalize onto the Ride —
   // avoids an extra lookup every time a rider views their booking.

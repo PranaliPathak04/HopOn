@@ -29,13 +29,31 @@ export async function GET() {
   const rides = await Ride.find({ _id: { $in: rideIds } }).lean();
   const rideById = new Map(rides.map((r) => [r._id.toString(), r]));
 
-  const result = bookings.map((b) => ({
-    ...b,
-    _id: b._id.toString(),
-    rideId: b.rideId.toString(),
-    riderId: b.riderId.toString(),
-    ride: rideById.get(b.rideId.toString()) ?? null,
-  }));
+  const now = Date.now();
+
+  const result = bookings.map((b) => {
+    const ride = rideById.get(b.rideId.toString()) ?? null;
+
+    // A booking is "completed" once the ride it belongs to has actually
+    // happened — even though the underlying booking.status stays
+    // "confirmed" in the DB (no separate action needed to mark it).
+    let displayStatus = b.status;
+    if (ride && b.status === "confirmed") {
+      const [hh, mm] = (ride.time || "00:00").split(":").map(Number);
+      const rideDateTime = new Date(ride.date);
+      rideDateTime.setHours(hh || 0, mm || 0, 0, 0);
+      if (rideDateTime.getTime() < now) displayStatus = "completed";
+    }
+
+    return {
+      ...b,
+      _id: b._id.toString(),
+      rideId: b.rideId.toString(),
+      riderId: b.riderId.toString(),
+      status: displayStatus,
+      ride,
+    };
+  });
 
   return NextResponse.json({ success: true, bookings: result });
 }

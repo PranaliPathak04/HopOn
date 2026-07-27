@@ -45,13 +45,25 @@ export async function GET() {
   ]);
 
   const countByRide = new Map(bookingCounts.map((b) => [b._id.toString(), b]));
+  const now = Date.now();
 
   const result = rides.map((r) => {
     const stats = countByRide.get(r._id.toString());
+
+    const [hh, mm] = (r.time || "00:00").split(":").map(Number);
+    const rideDateTime = new Date(r.date);
+    rideDateTime.setHours(hh || 0, mm || 0, 0, 0);
+    const isPast = rideDateTime.getTime() < now;
+
+    const displayStatus =
+      isPast && (r.status === "active" || r.status === "full")
+        ? "completed"
+        : r.status;
     return {
       ...r,
       _id: r._id.toString(),
       driverId: r.driverId.toString(),
+      status: displayStatus,
       bookingCount: stats?.count ?? 0,
       totalSeatsBooked: stats?.totalSeatsBooked ?? 0,
       totalRevenue: stats?.totalRevenue ?? 0,
