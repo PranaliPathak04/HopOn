@@ -119,81 +119,84 @@ export function DatePicker({ value, onChange, minDate }: DatePickerProps) {
       </button>
 
       {open && (
-        <div className="dt-panel dt-calendar">
-          {/* Month nav */}
-          <div className="dt-cal-header">
+        <>
+          <div className="dt-backdrop" onClick={() => setOpen(false)} />
+          <div className="dt-panel dt-calendar">
+            {/* Month nav */}
+            <div className="dt-cal-header">
+              <button
+                type="button"
+                onClick={() => setViewDate(new Date(year, month - 1, 1))}
+                className="dt-cal-nav"
+                aria-label="Previous month"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <span className="dt-cal-title">
+                {MONTH_NAMES[month]} {year}
+              </span>
+              <button
+                type="button"
+                onClick={() => setViewDate(new Date(year, month + 1, 1))}
+                className="dt-cal-nav"
+                aria-label="Next month"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+
+            {/* Day labels */}
+            <div className="dt-cal-weekdays">
+              {DAY_LABELS.map((d) => (
+                <div key={d} className="dt-cal-weekday">
+                  {d}
+                </div>
+              ))}
+            </div>
+
+            {/* Day cells */}
+            <div className="dt-cal-grid">
+              {cells.map((cell, i) => {
+                const isSelected = cell.dateStr === value;
+                const isToday = cell.dateStr === todayStr;
+                const classes = [
+                  "dt-cal-day",
+                  !cell.inMonth && "dt-cal-day--outside",
+                  cell.disabled && "dt-cal-day--disabled",
+                  isToday && !isSelected && "dt-cal-day--today",
+                  isSelected && "dt-cal-day--selected",
+                ]
+                  .filter(Boolean)
+                  .join(" ");
+
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    disabled={cell.disabled}
+                    onClick={() => selectDay(cell.dateStr, cell.disabled)}
+                    className={classes}
+                  >
+                    {cell.day}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Today shortcut */}
             <button
               type="button"
-              onClick={() => setViewDate(new Date(year, month - 1, 1))}
-              className="dt-cal-nav"
-              aria-label="Previous month"
+              onClick={() => {
+                const today = new Date();
+                const disabled = minDateObj ? today < minDateObj : false;
+                selectDay(todayStr, disabled);
+              }}
+              className="dt-cal-today-btn"
             >
-              <ChevronLeft size={16} />
-            </button>
-            <span className="dt-cal-title">
-              {MONTH_NAMES[month]} {year}
-            </span>
-            <button
-              type="button"
-              onClick={() => setViewDate(new Date(year, month + 1, 1))}
-              className="dt-cal-nav"
-              aria-label="Next month"
-            >
-              <ChevronRight size={16} />
+              Today
             </button>
           </div>
-
-          {/* Day labels */}
-          <div className="dt-cal-weekdays">
-            {DAY_LABELS.map((d) => (
-              <div key={d} className="dt-cal-weekday">
-                {d}
-              </div>
-            ))}
-          </div>
-
-          {/* Day cells */}
-          <div className="dt-cal-grid">
-            {cells.map((cell, i) => {
-              const isSelected = cell.dateStr === value;
-              const isToday = cell.dateStr === todayStr;
-              const classes = [
-                "dt-cal-day",
-                !cell.inMonth && "dt-cal-day--outside",
-                cell.disabled && "dt-cal-day--disabled",
-                isToday && !isSelected && "dt-cal-day--today",
-                isSelected && "dt-cal-day--selected",
-              ]
-                .filter(Boolean)
-                .join(" ");
-
-              return (
-                <button
-                  key={i}
-                  type="button"
-                  disabled={cell.disabled}
-                  onClick={() => selectDay(cell.dateStr, cell.disabled)}
-                  className={classes}
-                >
-                  {cell.day}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Today shortcut */}
-          <button
-            type="button"
-            onClick={() => {
-              const today = new Date();
-              const disabled = minDateObj ? today < minDateObj : false;
-              selectDay(todayStr, disabled);
-            }}
-            className="dt-cal-today-btn"
-          >
-            Today
-          </button>
-        </div>
+        </>
       )}
     </div>
   );
@@ -291,86 +294,89 @@ export function TimePicker({ value, onChange }: TimePickerProps) {
       </button>
 
       {open && (
-        <div className="dt-panel dt-clock">
-          <div className="dt-clock-header">
-            <div className="dt-clock-time">
-              <button
-                type="button"
-                onClick={() => setMode("hour")}
-                className={`dt-clock-time-part ${mode === "hour" ? "dt-clock-time-part--active" : ""}`}
-              >
-                {pad(hour12)}
-              </button>
-              <span className="dt-clock-time-sep">:</span>
-              <button
-                type="button"
-                onClick={() => setMode("minute")}
-                className={`dt-clock-time-part ${mode === "minute" ? "dt-clock-time-part--active" : ""}`}
-              >
-                {pad(mm)}
-              </button>
-            </div>
-            <div className="dt-clock-ampm">
-              <button
-                type="button"
-                onClick={() => setPeriod("AM")}
-                className={`dt-clock-ampm-btn ${period === "AM" ? "dt-clock-ampm-btn--active" : ""}`}
-              >
-                AM
-              </button>
-              <button
-                type="button"
-                onClick={() => setPeriod("PM")}
-                className={`dt-clock-ampm-btn ${period === "PM" ? "dt-clock-ampm-btn--active" : ""}`}
-              >
-                PM
-              </button>
-            </div>
-          </div>
-
-          <svg viewBox="0 0 260 260" className="dt-clock-face">
-            <circle cx={130} cy={130} r={118} className="dt-clock-face-bg" />
-            <line
-              x1={130}
-              y1={130}
-              x2={handPoint.x}
-              y2={handPoint.y}
-              className="dt-clock-hand"
-            />
-            <circle cx={130} cy={130} r={4} className="dt-clock-center" />
-
-            {dialNumbers.map((n, i) => {
-              const { x, y } = pointFor(i, 98);
-              const selected = i === selectedIndex;
-              return (
-                <g
-                  key={n}
-                  className="dt-clock-number-group"
-                  onClick={() =>
-                    mode === "hour" ? selectHour(n) : selectMinute(n)
-                  }
+        <>
+          <div className="dt-backdrop" onClick={() => setOpen(false)} />
+          <div className="dt-panel dt-clock">
+            <div className="dt-clock-header">
+              <div className="dt-clock-time">
+                <button
+                  type="button"
+                  onClick={() => setMode("hour")}
+                  className={`dt-clock-time-part ${mode === "hour" ? "dt-clock-time-part--active" : ""}`}
                 >
-                  {selected && (
-                    <circle
-                      cx={x}
-                      cy={y}
-                      r={17}
-                      className="dt-clock-selected-dot"
-                    />
-                  )}
-                  <text
-                    x={x}
-                    y={y + 4}
-                    textAnchor="middle"
-                    className={`dt-clock-number ${selected ? "dt-clock-number--selected" : ""}`}
+                  {pad(hour12)}
+                </button>
+                <span className="dt-clock-time-sep">:</span>
+                <button
+                  type="button"
+                  onClick={() => setMode("minute")}
+                  className={`dt-clock-time-part ${mode === "minute" ? "dt-clock-time-part--active" : ""}`}
+                >
+                  {pad(mm)}
+                </button>
+              </div>
+              <div className="dt-clock-ampm">
+                <button
+                  type="button"
+                  onClick={() => setPeriod("AM")}
+                  className={`dt-clock-ampm-btn ${period === "AM" ? "dt-clock-ampm-btn--active" : ""}`}
+                >
+                  AM
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPeriod("PM")}
+                  className={`dt-clock-ampm-btn ${period === "PM" ? "dt-clock-ampm-btn--active" : ""}`}
+                >
+                  PM
+                </button>
+              </div>
+            </div>
+
+            <svg viewBox="0 0 260 260" className="dt-clock-face">
+              <circle cx={130} cy={130} r={118} className="dt-clock-face-bg" />
+              <line
+                x1={130}
+                y1={130}
+                x2={handPoint.x}
+                y2={handPoint.y}
+                className="dt-clock-hand"
+              />
+              <circle cx={130} cy={130} r={4} className="dt-clock-center" />
+
+              {dialNumbers.map((n, i) => {
+                const { x, y } = pointFor(i, 98);
+                const selected = i === selectedIndex;
+                return (
+                  <g
+                    key={n}
+                    className="dt-clock-number-group"
+                    onClick={() =>
+                      mode === "hour" ? selectHour(n) : selectMinute(n)
+                    }
                   >
-                    {mode === "minute" ? pad(n) : n}
-                  </text>
-                </g>
-              );
-            })}
-          </svg>
-        </div>
+                    {selected && (
+                      <circle
+                        cx={x}
+                        cy={y}
+                        r={17}
+                        className="dt-clock-selected-dot"
+                      />
+                    )}
+                    <text
+                      x={x}
+                      y={y + 4}
+                      textAnchor="middle"
+                      className={`dt-clock-number ${selected ? "dt-clock-number--selected" : ""}`}
+                    >
+                      {mode === "minute" ? pad(n) : n}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+        </>
       )}
     </div>
   );

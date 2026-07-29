@@ -349,6 +349,42 @@ body {
   overflow: hidden;
 }
 
+/* Backdrop shown only on small screens, dims the page behind the panel */
+.dt-backdrop {
+  display: none;
+}
+
+/* On narrow viewports, dropdowns anchored under the field can run off the
+   edge of the screen. Switch to a centered modal-style panel instead. */
+@media (max-width: 480px) {
+  .dt-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 29;
+    animation: dtPanelIn 0.16s ease-out;
+  }
+
+  .dt-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: 0;
+    transform: translate(-50%, -50%);
+    width: calc(100vw - 40px);
+    max-width: 320px;
+    max-height: 85vh;
+    overflow-y: auto;
+    transform-origin: center;
+  }
+
+  .dt-calendar,
+  .dt-clock {
+    width: 100%;
+  }
+}
+
 /* Calendar */
 .dt-calendar {
   width: 300px;
