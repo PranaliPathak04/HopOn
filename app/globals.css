@@ -47,13 +47,16 @@ body {
   color: var(--color-ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
 
 .font-display {
   font-family: var(--font-display);
 }
 
-/* Route line — pickup dot stays gold, drop dot now teal */
+/* Route line — pickup dot stays gold, drop dot teal */
 .route-line {
   position: relative;
   height: 1px;
@@ -103,7 +106,7 @@ body {
 
 .btn-go:hover {
   background: var(--color-go-dark);
-  box-shadow: 0 0 32px rgba(251, 191, 36, 0.3);
+  box-shadow: 0 0 32px var(--color-go-glow);
   transform: translateY(-1px);
 }
 
@@ -150,7 +153,7 @@ body {
 
 .btn-tide:hover {
   background: var(--color-tide-dark);
-  box-shadow: 0 0 32px rgba(20, 184, 166, 0.3);
+  box-shadow: 0 0 32px var(--color-tide-glow);
   transform: translateY(-1px);
 }
 
@@ -159,17 +162,18 @@ body {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 20px;
+  transition: border-color 0.2s;
 }
 
 .card:hover {
-  border-color: #3a3a3a;
+  border-color: var(--color-ink-dim);
 }
 
-/* Pills — gold for action-related tags, teal for status/match tags */
+/* Pills */
 .pill-go {
   background: var(--color-go-glow);
   color: var(--color-go);
-  border: 1px solid rgba(251, 191, 36, 0.2);
+  border: 1px solid var(--color-go-glow);
   border-radius: 9999px;
   font-size: 11px;
   font-weight: 700;
@@ -179,7 +183,7 @@ body {
 .pill-tide {
   background: var(--color-tide-glow);
   color: var(--color-tide);
-  border: 1px solid rgba(20, 184, 166, 0.2);
+  border: 1px solid var(--color-tide-glow);
   border-radius: 9999px;
   font-size: 11px;
   font-weight: 700;
@@ -189,14 +193,14 @@ body {
 .pill-spark {
   background: var(--color-spark-glow);
   color: var(--color-spark);
-  border: 1px solid rgba(244, 63, 94, 0.2);
+  border: 1px solid var(--color-spark-glow);
   border-radius: 9999px;
   font-size: 11px;
   font-weight: 700;
   padding: 3px 10px;
 }
 
-/* Input — focus ring now teal instead of gold, feels calmer/less "everything glows gold" */
+/* Input */
 .input-dark {
   background: var(--color-surface-2);
   border: 1px solid var(--color-border);
@@ -266,4 +270,347 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* Date & time pickers                                                  */
+/* ------------------------------------------------------------------ */
+
+@keyframes dtPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Shared trigger field */
+.dt-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.dt-field:hover {
+  border-color: var(--color-tide);
+}
+
+.dt-field--open {
+  border-color: var(--color-tide);
+  box-shadow: 0 0 0 3px var(--color-tide-glow);
+}
+
+.dt-field-icon {
+  color: var(--color-ink-dim);
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.dt-field--open .dt-field-icon {
+  color: var(--color-tide);
+}
+
+.dt-field-value {
+  flex: 1;
+  font-size: 14px;
+  color: var(--color-ink);
+}
+
+.dt-field-placeholder {
+  flex: 1;
+  font-size: 14px;
+  color: var(--color-ink-dim);
+}
+
+/* Dropdown panel shell */
+.dt-panel {
+  position: absolute;
+  z-index: 30;
+  margin-top: 6px;
+  border-radius: 18px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  transform-origin: top;
+  animation: dtPanelIn 0.16s ease-out;
+  overflow: hidden;
+}
+
+/* Calendar */
+.dt-calendar {
+  width: 300px;
+  padding: 14px 14px 16px;
+}
+
+.dt-cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.dt-cal-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--color-ink);
+}
+
+.dt-cal-nav {
+  display: flex;
+  height: 28px;
+  width: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: var(--color-ink-muted);
+  background: transparent;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.dt-cal-nav:hover {
+  background: var(--color-surface-2);
+  color: var(--color-go);
+}
+
+.dt-cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 2px;
+}
+
+.dt-cal-weekday {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 0;
+  color: var(--color-ink-dim);
+}
+
+.dt-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.dt-cal-day {
+  position: relative;
+  display: flex;
+  height: 34px;
+  width: 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-ink);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    box-shadow 0.15s,
+    transform 0.1s;
+}
+
+.dt-cal-day:hover:not(.dt-cal-day--disabled):not(.dt-cal-day--selected) {
+  background: var(--color-surface-2);
+}
+
+.dt-cal-day--outside {
+  color: var(--color-ink-dim);
+  opacity: 0.5;
+}
+
+.dt-cal-day--disabled {
+  color: var(--color-ink-dim);
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Today gets a quiet teal ring (status), unless it's also selected */
+.dt-cal-day--today {
+  box-shadow: inset 0 0 0 1.5px var(--color-tide);
+  color: var(--color-tide);
+  font-weight: 700;
+}
+
+/* Selected day gets the gold fill (action) */
+.dt-cal-day--selected {
+  background: var(--color-go);
+  color: #0f0f0f;
+  font-weight: 800;
+  box-shadow: 0 0 14px var(--color-go-glow);
+  transform: scale(1.05);
+}
+
+.dt-cal-today-btn {
+  margin-top: 12px;
+  width: 100%;
+  border-radius: 10px;
+  padding: 9px 0;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-tide);
+  background: var(--color-tide-glow);
+  border: 1px solid var(--color-tide-glow);
+  transition:
+    box-shadow 0.15s,
+    transform 0.1s;
+}
+
+.dt-cal-today-btn:hover {
+  box-shadow: 0 0 20px var(--color-tide-glow);
+}
+
+.dt-cal-today-btn:active {
+  transform: scale(0.98);
+}
+
+/* Clock time picker */
+.dt-clock {
+  width: 280px;
+  padding: 18px 20px 20px;
+}
+
+.dt-clock-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.dt-clock-time {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.dt-clock-time-part {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-ink-muted);
+  background: transparent;
+  border-radius: 8px;
+  padding: 4px 6px;
+  transition:
+    color 0.15s,
+    background 0.15s;
+}
+
+.dt-clock-time-part:hover {
+  color: var(--color-ink);
+}
+
+.dt-clock-time-part--active {
+  color: var(--color-go);
+  background: var(--color-go-glow);
+}
+
+.dt-clock-time-sep {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--color-ink-dim);
+  line-height: 1;
+}
+
+.dt-clock-ampm {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dt-clock-ampm-btn {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: var(--color-ink-muted);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  transition:
+    color 0.15s,
+    background 0.15s,
+    box-shadow 0.15s;
+}
+
+.dt-clock-ampm-btn:hover {
+  color: var(--color-ink);
+}
+
+.dt-clock-ampm-btn--active {
+  color: #0f0f0f;
+  background: var(--color-tide);
+  border-color: var(--color-tide);
+  box-shadow: 0 0 12px var(--color-tide-glow);
+}
+
+.dt-clock-face {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.dt-clock-face-bg {
+  fill: var(--color-surface-2);
+}
+
+.dt-clock-hand {
+  stroke: var(--color-go);
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition: all 0.15s ease-out;
+}
+
+.dt-clock-center {
+  fill: var(--color-go);
+}
+
+.dt-clock-selected-dot {
+  fill: var(--color-go);
+  filter: drop-shadow(0 0 6px var(--color-go-glow));
+  transition: all 0.15s ease-out;
+}
+
+.dt-clock-number-group {
+  cursor: pointer;
+}
+
+.dt-clock-number {
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--color-ink-muted);
+  user-select: none;
+  transition: fill 0.15s;
+}
+
+.dt-clock-number-group:hover .dt-clock-number:not(.dt-clock-number--selected) {
+  fill: var(--color-ink);
+}
+
+.dt-clock-number--selected {
+  fill: #0f0f0f;
+  font-weight: 800;
 }

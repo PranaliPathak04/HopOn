@@ -25,6 +25,7 @@ import {
 import LocationSearch from "@/components/LocationSearch";
 import { getRoute, type GeoResult } from "@/lib/geocode";
 import dynamic from "next/dynamic";
+import { DatePicker, TimePicker } from "@/components/DateTimePicker";
 
 const RouteMap = dynamic(() => import("@/components/RouteMap"), { ssr: false });
 
@@ -635,35 +636,12 @@ export default function PublishRidePage() {
             <form onSubmit={handleSubmit} className="space-y-3">
               {/* Date + Time */}
               <div className="grid grid-cols-2 gap-3">
-                <div className={inputClass} style={inputStyle}>
-                  <Calendar
-                    size={15}
-                    style={{ color: "var(--color-ink-dim)", flexShrink: 0 }}
-                  />
-                  <input
-                    className="flex-1 bg-transparent text-sm focus:outline-none"
-                    style={{ color: "var(--color-ink)" }}
-                    type="date"
-                    value={date}
-                    min={new Date().toISOString().split("T")[0]}
-                    onChange={(e) => setDate(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className={inputClass} style={inputStyle}>
-                  <Clock
-                    size={15}
-                    style={{ color: "var(--color-ink-dim)", flexShrink: 0 }}
-                  />
-                  <input
-                    className="flex-1 bg-transparent text-sm focus:outline-none"
-                    style={{ color: "var(--color-ink)" }}
-                    type="time"
-                    value={time}
-                    onChange={(e) => setTime(e.target.value)}
-                    required
-                  />
-                </div>
+                <DatePicker
+                  value={date}
+                  onChange={setDate}
+                  minDate={new Date().toISOString().split("T")[0]}
+                />
+                <TimePicker value={time} onChange={setTime} />
               </div>
 
               {/* Seats + Price */}
