@@ -23,6 +23,7 @@ function MobileDrawer({
   const links = [
     { href: "/profile", label: "Profile", icon: User },
     { href: "/search", label: "Find a ride", icon: Search },
+    { href: "/publish", label: "Publish ride", icon: Plus },
   ];
 
   return (
@@ -73,18 +74,18 @@ function MobileDrawer({
                   href={href}
                   onClick={onClose}
                   className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors"
-                  style={{ color: "var(--color-ink-muted)" }}
+                  style={{ color: "var(--color-go)" }}
                 >
-                  <Icon size={16} style={{ color: "var(--color-ink-dim)" }} />
+                  <Icon size={16} style={{ color: "var(--color-go)" }} />
                   {label}
                 </Link>
               ))}
               <button
                 onClick={onSignOut}
                 className="flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium transition-colors"
-                style={{ color: "var(--color-ink-muted)" }}
+                style={{ color: "var(--color-spark)" }}
               >
-                <LogOut size={16} style={{ color: "var(--color-ink-dim)" }} />
+                <LogOut size={16} style={{ color: "var(--color-spark)" }} />
                 Sign out
               </button>
             </nav>
