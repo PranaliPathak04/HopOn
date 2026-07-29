@@ -171,6 +171,7 @@ export default function DashboardPage() {
             <Link
               href="/publish"
               className="btn-outline-tide flex items-center gap-1.5 px-4 py-1.5 text-sm"
+              style={{ color: "var(--color-tide)" }}
             >
               <Plus size={14} /> Publish ride
             </Link>
@@ -184,19 +185,32 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          {/* Mobile — single menu trigger */}
-          <button
-            onClick={() => setMenuOpen(true)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg sm:hidden"
-            style={{
-              background: "var(--color-surface)",
-              border: "1px solid var(--color-border)",
-              color: "var(--color-ink-muted)",
-            }}
-            aria-label="Open menu"
-          >
-            <Menu size={18} />
-          </button>
+          {/* Mobile — decorative find-a-ride pill + menu trigger */}
+          <div className="flex items-center gap-2 sm:hidden">
+            <Link
+              href="/search"
+              className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
+              style={{
+                border: "1px solid var(--color-go)",
+                color: "var(--color-go)",
+              }}
+            >
+              <Search size={14} />
+              Find a ride
+            </Link>
+            <button
+              onClick={() => setMenuOpen(true)}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+              style={{
+                background: "var(--color-surface)",
+                border: "1px solid var(--color-border)",
+                color: "var(--color-ink-muted)",
+              }}
+              aria-label="Open menu"
+            >
+              <Menu size={18} />
+            </button>
+          </div>
         </div>
       </header>
 
