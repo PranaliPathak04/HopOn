@@ -5,648 +5,96 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Car,
-  Phone,
-  Hash,
-  Clock,
-  Calendar,
-  Users,
-  IndianRupee,
-  Search,
-  Plus,
-  LogOut,
-  X,
-  Route,
-  TrendingUp,
-  CheckCircle2,
-  XCircle,
-  AlertCircle,
-  ChevronDown,
-  MapPin,
-  Loader2,
-} from "lucide-react";
+import { Search, Plus, LogOut, Menu, X, User } from "lucide-react";
 import BookingsTab from "@/components/dashboard/BookingsTab";
-// ─── Types ────────────────────────────────────────────────────────────────────
+import MyRidesTab from "@/components/dashboard/MyRidesTab";
 
-interface DriverRide {
-  _id: string;
-  vehicle: string;
-  pickupLabel: string | null;
-  destLabel: string | null;
-  seats: number;
-  seatsAvailable: number;
-  date: string;
-  time: string;
-  price: number;
-  status: "active" | "full" | "completed" | "cancelled";
-  bookingCount: number;
-  totalSeatsBooked: number;
-  totalRevenue: number;
-}
+// ─── Mobile nav drawer ────────────────────────────────────────────────────────
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-function StatusPill({ status }: { status: string }) {
-  const map: Record<
-    string,
-    {
-      label: string;
-      icon: React.ReactNode;
-      bg: string;
-      color: string;
-      border: string;
-    }
-  > = {
-    confirmed: {
-      label: "Confirmed",
-      icon: <CheckCircle2 size={11} />,
-      bg: "rgba(20,184,166,0.1)",
-      color: "var(--color-tide)",
-      border: "rgba(20,184,166,0.2)",
-    },
-    completed: {
-      label: "Completed",
-      icon: <CheckCircle2 size={11} />,
-      bg: "var(--color-surface-2)",
-      color: "var(--color-ink-muted)",
-      border: "var(--color-border)",
-    },
-    cancelled: {
-      label: "Cancelled",
-      icon: <XCircle size={11} />,
-      bg: "rgba(244,63,94,0.1)",
-      color: "var(--color-spark)",
-      border: "rgba(244,63,94,0.2)",
-    },
-    active: {
-      label: "Active",
-      icon: <CheckCircle2 size={11} />,
-      bg: "rgba(20,184,166,0.1)",
-      color: "var(--color-tide)",
-      border: "rgba(20,184,166,0.2)",
-    },
-    full: {
-      label: "Full",
-      icon: <Users size={11} />,
-      bg: "rgba(244,63,94,0.1)",
-      color: "var(--color-spark)",
-      border: "rgba(244,63,94,0.2)",
-    },
-    pending: {
-      label: "Pending",
-      icon: <AlertCircle size={11} />,
-      bg: "rgba(251,191,36,0.08)",
-      color: "var(--color-go)",
-      border: "rgba(251,191,36,0.15)",
-    },
-    paid: {
-      label: "Paid",
-      icon: <CheckCircle2 size={11} />,
-      bg: "rgba(20,184,166,0.1)",
-      color: "var(--color-tide)",
-      border: "rgba(20,184,166,0.2)",
-    },
-    refunded: {
-      label: "Refunded",
-      icon: <AlertCircle size={11} />,
-      bg: "var(--color-surface-2)",
-      color: "var(--color-ink-muted)",
-      border: "var(--color-border)",
-    },
-  };
-  const s = map[status] ?? map.completed;
-  return (
-    <span
-      className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold"
-      style={{
-        background: s.bg,
-        color: s.color,
-        border: `1px solid ${s.border}`,
-      }}
-    >
-      {s.icon}
-      {s.label}
-    </span>
-  );
-}
-
-function SkeletonCard() {
-  return (
-    <div
-      className="animate-pulse rounded-2xl p-5"
-      style={{
-        background: "var(--color-surface)",
-        border: "1px solid var(--color-border)",
-      }}
-    >
-      <div className="flex items-start justify-between">
-        <div className="space-y-2">
-          <div
-            className="h-4 w-32 rounded"
-            style={{ background: "var(--color-border)" }}
-          />
-          <div
-            className="h-3 w-20 rounded"
-            style={{ background: "var(--color-surface-2)" }}
-          />
-        </div>
-        <div
-          className="h-5 w-16 rounded-full"
-          style={{ background: "var(--color-border)" }}
-        />
-      </div>
-      <div className="mt-4 space-y-2">
-        <div
-          className="h-3 w-full rounded"
-          style={{ background: "var(--color-surface-2)" }}
-        />
-        <div
-          className="h-3 w-2/3 rounded"
-          style={{ background: "var(--color-surface-2)" }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function EmptyState({
-  icon: Icon,
-  title,
-  body,
-  cta,
-  href,
+function MobileDrawer({
+  open,
+  onClose,
+  onSignOut,
 }: {
-  icon: React.ElementType;
-  title: string;
-  body: string;
-  cta: string;
-  href: string;
+  open: boolean;
+  onClose: () => void;
+  onSignOut: () => void;
 }) {
-  return (
-    <motion.div
-      className="flex flex-col items-center gap-4 rounded-2xl py-16 text-center"
-      style={{ border: "1px dashed var(--color-border)" }}
-      initial={{ opacity: 0, scale: 0.97 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      <div
-        className="flex h-14 w-14 items-center justify-center rounded-2xl"
-        style={{
-          background: "var(--color-surface)",
-          border: "1px solid var(--color-border)",
-        }}
-      >
-        <Icon size={24} style={{ color: "var(--color-ink-dim)" }} />
-      </div>
-      <div>
-        <p
-          className="font-display text-lg font-bold"
-          style={{ color: "var(--color-ink)" }}
-        >
-          {title}
-        </p>
-        <p className="mt-1 text-sm" style={{ color: "var(--color-ink-dim)" }}>
-          {body}
-        </p>
-      </div>
-      <Link href={href} className="btn-go px-5 py-2.5 text-sm">
-        {cta}
-      </Link>
-    </motion.div>
-  );
-}
-
-// ─── Bookings Tab ─────────────────────────────────────────────────────────────
-
-// ─── My Rides Tab ─────────────────────────────────────────────────────────────
-
-// ── Types for stops ───────────────────────────────────────────────────────────
-
-interface Stop {
-  key: string;
-  latitude: number;
-  longitude: number;
-  label: string | null;
-  pickupSequence: number | null;
-  riders: {
-    name: string;
-    phone: string;
-    seatsBooked: number;
-    bookingId: string;
-  }[];
-  totalSeats: number;
-}
-
-// ── Stops list — expandable per ride card ─────────────────────────────────────
-
-function StopsList({ rideId }: { rideId: string }) {
-  const [expanded, setExpanded] = useState(false);
-  const [stops, setStops] = useState<Stop[] | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  async function toggle() {
-    if (!expanded && stops === null) {
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/rides/${rideId}/stops`);
-        const data = await res.json();
-        if (data.success) setStops(data.stops);
-      } finally {
-        setLoading(false);
-      }
-    }
-    setExpanded(!expanded);
-  }
+  const links = [
+    { href: "/profile", label: "Profile", icon: User },
+    { href: "/search", label: "Find a ride", icon: Search },
+  ];
 
   return (
-    <div
-      className="mt-4"
-      style={{ borderTop: "1px solid var(--color-border)", paddingTop: 16 }}
-    >
-      <button
-        onClick={toggle}
-        className="flex w-full items-center justify-between text-sm font-semibold transition-colors"
-        style={{ color: "var(--color-ink-muted)" }}
-      >
-        <span className="flex items-center gap-1.5">
-          <MapPin size={13} style={{ color: "var(--color-go)" }} />
-          Pickup stops
-        </span>
-        <ChevronDown
-          size={15}
-          style={{
-            transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
-            transition: "transform 0.2s",
-            color: "var(--color-ink-dim)",
-          }}
-        />
-      </button>
-
-      <AnimatePresence>
-        {expanded && (
+    <AnimatePresence>
+      {open && (
+        <>
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden"
-          >
-            <div className="mt-3 space-y-2">
-              {loading ? (
-                <div
-                  className="flex items-center gap-2 text-sm"
-                  style={{ color: "var(--color-ink-dim)" }}
-                >
-                  <Loader2 size={13} className="animate-spin" /> Loading
-                  stops...
-                </div>
-              ) : !stops || stops.length === 0 ? (
-                <p
-                  className="text-sm"
-                  style={{ color: "var(--color-ink-dim)" }}
-                >
-                  No confirmed bookings yet.
-                </p>
-              ) : (
-                stops.map((stop, idx) => (
-                  <div
-                    key={stop.key}
-                    className="rounded-xl p-3"
-                    style={{
-                      background: "var(--color-surface-2)",
-                      border: "1px solid var(--color-border)",
-                    }}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div
-                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold"
-                        style={{
-                          background: "var(--color-go)",
-                          color: "#0f0f0f",
-                        }}
-                      >
-                        {idx + 1}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p
-                          className="text-sm font-medium"
-                          style={{ color: "var(--color-ink)" }}
-                        >
-                          {stop.label ??
-                            `${stop.latitude.toFixed(4)}, ${stop.longitude.toFixed(4)}`}
-                        </p>
-                        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1">
-                          {stop.riders.map((r) => (
-                            <span
-                              key={r.bookingId}
-                              className="flex items-center gap-1 text-xs"
-                              style={{ color: "var(--color-ink-muted)" }}
-                            >
-                              <Users
-                                size={11}
-                                style={{ color: "var(--color-ink-dim)" }}
-                              />
-                              {r.name} ({r.seatsBooked})
-                              {r.phone && (
-                                <a
-                                  href={`tel:${r.phone}`}
-                                  className="ml-1"
-                                  style={{ color: "var(--color-go)" }}
-                                >
-                                  <Phone size={11} />
-                                </a>
-                              )}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <span
-                        className="shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold"
-                        style={{
-                          background: "var(--color-go-glow)",
-                          color: "var(--color-go)",
-                        }}
-                      >
-                        {stop.totalSeats} seat{stop.totalSeats !== 1 ? "s" : ""}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-// ── My Rides Tab ─────────────────────────────────────────────────────────────
-
-function MyRidesTab() {
-  const [rides, setRides] = useState<DriverRide[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/users/me/rides")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.success) setRides(d.rides);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading)
-    return (
-      <div className="space-y-4">
-        {[1, 2].map((i) => (
-          <SkeletonCard key={i} />
-        ))}
-      </div>
-    );
-
-  if (rides.length === 0)
-    return (
-      <EmptyState
-        icon={Route}
-        title="No rides posted yet"
-        body="If you're driving somewhere, split the cost with a fellow traveller."
-        cta="Publish a ride"
-        href="/publish"
-      />
-    );
-
-  const totalRevenue = rides.reduce((sum, r) => sum + r.totalRevenue, 0);
-  const activeCount = rides.filter((r) => r.status === "active").length;
-
-  return (
-    <div className="space-y-4">
-      <motion.div
-        className="grid grid-cols-3 gap-3"
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        {[
-          {
-            icon: <Car size={16} />,
-            label: "Total rides",
-            value: rides.length,
-            color: "var(--color-ink)",
-          },
-          {
-            icon: <TrendingUp size={16} />,
-            label: "Active now",
-            value: activeCount,
-            color: "var(--color-tide)",
-          },
-          {
-            icon: <IndianRupee size={16} />,
-            label: "Est. earnings",
-            value: `₹${totalRevenue}`,
-            color: "var(--color-go)",
-          },
-        ].map(({ icon, label, value, color }) => (
-          <div
-            key={label}
-            className="rounded-xl p-4 text-center"
+            className="fixed inset-0 z-40 sm:hidden"
+            style={{ background: "rgba(0,0,0,0.6)" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+          />
+          <motion.div
+            className="fixed right-0 top-0 z-50 h-full w-64 sm:hidden"
             style={{
               background: "var(--color-surface)",
-              border: "1px solid var(--color-border)",
+              borderLeft: "1px solid var(--color-border)",
             }}
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "tween", duration: 0.25, ease: "easeOut" }}
           >
-            <div className="flex justify-center mb-1" style={{ color }}>
-              {icon}
-            </div>
-            <p
-              className="font-display text-xl font-extrabold"
-              style={{ color }}
+            <div
+              className="flex items-center justify-between px-5 py-4"
+              style={{ borderBottom: "1px solid var(--color-border)" }}
             >
-              {value}
-            </p>
-            <p
-              className="text-xs mt-0.5"
-              style={{ color: "var(--color-ink-dim)" }}
-            >
-              {label}
-            </p>
-          </div>
-        ))}
-      </motion.div>
-
-      {rides.map((r, i) => (
-        <motion.div
-          key={r._id}
-          className="rounded-2xl p-5"
-          style={{
-            background: "var(--color-surface)",
-            border: "1px solid var(--color-border)",
-          }}
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: i * 0.06 }}
-        >
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p
+              <span
                 className="font-display font-bold"
                 style={{ color: "var(--color-ink)" }}
               >
-                {r.vehicle}
-              </p>
-              <p
-                className="flex items-center gap-1.5 text-sm mt-0.5"
+                Menu
+              </span>
+              <button
+                onClick={onClose}
+                style={{ color: "var(--color-ink-dim)" }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <nav className="flex flex-col gap-1 p-3">
+              {links.map(({ href, label, icon: Icon }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={onClose}
+                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors"
+                  style={{ color: "var(--color-ink-muted)" }}
+                >
+                  <Icon size={16} style={{ color: "var(--color-ink-dim)" }} />
+                  {label}
+                </Link>
+              ))}
+              <button
+                onClick={onSignOut}
+                className="flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium transition-colors"
                 style={{ color: "var(--color-ink-muted)" }}
               >
-                <Calendar size={12} /> {formatDate(r.date)}
-                <span style={{ color: "var(--color-border)" }}>·</span>
-                <Clock size={12} /> {r.time}
-              </p>
-            </div>
-            <div className="text-right shrink-0">
-              <StatusPill status={r.status} />
-              <p
-                className="mt-1.5 flex items-center justify-end gap-1 text-xs font-semibold"
-                style={{ color: "var(--color-go)" }}
-              >
-                <IndianRupee size={11} /> ₹{r.price}{" "}
-                <span
-                  style={{ color: "var(--color-ink-dim)", fontWeight: 400 }}
-                >
-                  / seat (full route)
-                </span>
-              </p>
-            </div>
-          </div>
-
-          {/* Pickup & drop locations */}
-          {(r.pickupLabel || r.destLabel) && (
-            <div className="mt-3 flex gap-3">
-              <div className="flex flex-col items-center pt-1">
-                <span
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                    background: "var(--color-go)",
-                    boxShadow: "0 0 6px var(--color-go)",
-                    flexShrink: 0,
-                  }}
-                />
-                <span
-                  style={{
-                    width: 2,
-                    height: 24,
-                    background: "var(--color-border)",
-                    margin: "3px 0",
-                  }}
-                />
-                <span
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                    background: "var(--color-signal)",
-                    boxShadow: "0 0 6px var(--color-signal)",
-                    flexShrink: 0,
-                  }}
-                />
-              </div>
-              <div className="flex-1 min-w-0 space-y-2.5">
-                <p
-                  className="text-xs"
-                  style={{ color: "var(--color-ink-muted)" }}
-                >
-                  {r.pickupLabel ?? "Pickup location"}
-                </p>
-                <p
-                  className="text-xs"
-                  style={{ color: "var(--color-ink-muted)" }}
-                >
-                  {r.destLabel ?? "Drop location"}
-                </p>
-              </div>
-            </div>
-          )}
-
-          <div className="my-4 route-line" />
-
-          <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
-            {[
-              { label: "Total seats", value: r.seats },
-              { label: "Seats left", value: r.seatsAvailable },
-              { label: "Bookings", value: r.bookingCount },
-              { label: "Revenue", value: `₹${r.totalRevenue}`, accent: true },
-            ].map(({ label, value, accent }) => (
-              <div key={label}>
-                <p
-                  className="text-xs mb-0.5"
-                  style={{ color: "var(--color-ink-dim)" }}
-                >
-                  {label}
-                </p>
-                <p
-                  className="font-medium"
-                  style={{
-                    color: accent ? "var(--color-go)" : "var(--color-ink)",
-                    fontFamily: accent ? "var(--font-display)" : undefined,
-                    fontWeight: accent ? 700 : undefined,
-                  }}
-                >
-                  {value}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-4">
-            <div
-              className="mb-1.5 flex justify-between text-xs"
-              style={{ color: "var(--color-ink-dim)" }}
-            >
-              <span className="flex items-center gap-1">
-                <Users size={11} /> Seat fill
-              </span>
-              <span>
-                {r.seats - r.seatsAvailable}/{r.seats} booked
-              </span>
-            </div>
-            <div
-              className="h-1.5 w-full overflow-hidden rounded-full"
-              style={{ background: "var(--color-surface-2)" }}
-            >
-              <motion.div
-                className="h-full rounded-full"
-                style={{ background: "var(--color-tide)" }}
-                initial={{ width: 0 }}
-                animate={{
-                  width: `${((r.seats - r.seatsAvailable) / r.seats) * 100}%`,
-                }}
-                transition={{
-                  duration: 0.6,
-                  delay: 0.2 + i * 0.06,
-                  ease: "easeOut",
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Expandable pickup stops — only useful once someone has booked */}
-          {r.bookingCount > 0 && <StopsList rideId={r._id} />}
-        </motion.div>
-      ))}
-    </div>
+                <LogOut size={16} style={{ color: "var(--color-ink-dim)" }} />
+                Sign out
+              </button>
+            </nav>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 }
+
 // ─── Dashboard Page ───────────────────────────────────────────────────────────
 
 type Tab = "bookings" | "rides";
@@ -655,6 +103,7 @@ export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("bookings");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") router.replace("/login");
@@ -693,7 +142,7 @@ export default function DashboardPage() {
           background: "rgba(15,15,15,0.9)",
           backdropFilter: "blur(12px)",
         }}
-        className="sticky top-0 z-50"
+        className="sticky top-0 z-30"
       >
         <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
           <Link href="/" className="flex items-center gap-2">
@@ -702,7 +151,9 @@ export default function DashboardPage() {
               Hop<span style={{ color: "var(--color-go)" }}>On</span>
             </span>
           </Link>
-          <div className="flex items-center gap-3">
+
+          {/* Desktop nav — unchanged */}
+          <div className="hidden items-center gap-3 sm:flex">
             <Link
               href="/profile"
               style={{ color: "var(--color-ink-muted)" }}
@@ -712,7 +163,7 @@ export default function DashboardPage() {
             </Link>
             <Link
               href="/search"
-              className="nav-link hidden sm:flex items-center gap-1.5 px-1 py-2"
+              className="nav-link flex items-center gap-1.5 px-1 py-2"
               style={{ color: "var(--color-ink-muted)" }}
             >
               <Search size={14} /> Find a ride
@@ -729,13 +180,36 @@ export default function DashboardPage() {
               style={{ color: "var(--color-ink-muted)" }}
             >
               <LogOut size={14} />
-              <span className="hidden sm:block">Sign out</span>
+              <span>Sign out</span>
             </button>
           </div>
+
+          {/* Mobile — single menu trigger */}
+          <button
+            onClick={() => setMenuOpen(true)}
+            className="flex h-9 w-9 items-center justify-center rounded-lg sm:hidden"
+            style={{
+              background: "var(--color-surface)",
+              border: "1px solid var(--color-border)",
+              color: "var(--color-ink-muted)",
+            }}
+            aria-label="Open menu"
+          >
+            <Menu size={18} />
+          </button>
         </div>
       </header>
 
-      <main className="mx-auto max-w-2xl px-5 py-10">
+      <MobileDrawer
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        onSignOut={() => {
+          setMenuOpen(false);
+          signOut({ callbackUrl: "/" });
+        }}
+      />
+
+      <main className="mx-auto max-w-2xl px-5 py-10 pb-28 sm:pb-10">
         <motion.div
           className="mb-8"
           initial={{ opacity: 0, y: 16 }}
@@ -796,6 +270,19 @@ export default function DashboardPage() {
           </motion.div>
         </AnimatePresence>
       </main>
+
+      {/* Publish ride FAB — mobile only, desktop keeps the header button */}
+      <Link
+        href="/publish"
+        className="fixed bottom-6 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full sm:hidden"
+        style={{
+          background: "var(--color-go)",
+          boxShadow: "0 8px 24px rgba(251,191,36,0.35)",
+        }}
+        aria-label="Publish ride"
+      >
+        <Plus size={24} style={{ color: "#0f0f0f" }} />
+      </Link>
     </div>
   );
 }

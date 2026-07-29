@@ -36,6 +36,7 @@ function BookingCard({
   onCancel: (id: string) => void;
 }) {
   const [showDetails, setShowDetails] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <motion.div
@@ -72,13 +73,13 @@ function BookingCard({
           )}
           <div className="min-w-0">
             <p
-              className="font-display font-bold "
+              className="font-display font-bold truncate"
               style={{ color: "var(--color-ink)" }}
             >
               {b.ride?.driverName ?? "Unknown driver"}
             </p>
             <p
-              className="flex items-center gap-1.5 text-xs mt-0.5 "
+              className="flex items-center gap-1.5 text-xs mt-0.5 truncate"
               style={{ color: "var(--color-ink-muted)" }}
             >
               <Car size={11} /> {b.ride?.vehicle ?? "—"}
@@ -136,7 +137,7 @@ function BookingCard({
             }}
           />
           <p
-            className="flex-1 min-w-0 text-xs"
+            className="flex-1 min-w-0 line-clamp-2 text-xs"
             style={{ color: "var(--color-ink-muted)" }}
           >
             {b.pickupLabel ?? "Pickup location"}
@@ -155,7 +156,7 @@ function BookingCard({
             }}
           />
           <p
-            className="flex-1 min-w-0  text-xs"
+            className="flex-1 min-w-0 line-clamp-2 text-xs"
             style={{ color: "var(--color-ink-muted)" }}
           >
             {b.dropLabel ?? "Drop location"}
