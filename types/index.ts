@@ -55,6 +55,9 @@ export interface Booking {
   segmentDistanceKm: number;
   fare: number;
 
+  otp: string;
+  otpVerified: boolean;
+
   status: "confirmed" | "cancelled" | "completed";
   paymentStatus: "pending" | "paid" | "refunded";
 

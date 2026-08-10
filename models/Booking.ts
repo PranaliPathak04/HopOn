@@ -7,6 +7,9 @@ const BookingSchema = new Schema(
 
     seatsBooked: { type: Number, required: true, min: 1 },
 
+    otp: { type: String, required: true },
+    otpVerified: { type: Boolean, default: false },
+
     pickupInfo: {
       latitude: { type: Number, required: true },
       longitude: { type: Number, required: true },

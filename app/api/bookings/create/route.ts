@@ -80,6 +80,9 @@ export async function POST(req: NextRequest) {
 
   const fare = Math.round(segmentDistanceKm * pricePerKm * seatsBooked);
 
+  // Generate a 6-digit OTP for the rider to verify pickup
+  const otp = String(Math.floor(100000 + Math.random() * 900000));
+
   // Find where this pickup falls along the driver's route, so the driver's
   // dashboard can list stops in the order they'll actually be reached.
   const dateStr = new Date(ride.date).toISOString().slice(0, 10);
@@ -116,6 +119,7 @@ export async function POST(req: NextRequest) {
       pickupSequence,
       segmentDistanceKm,
       fare,
+      otp,
       status: "confirmed",
       paymentStatus: "pending",
     });

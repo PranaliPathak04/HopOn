@@ -13,6 +13,7 @@ import {
   X,
   Route,
   ChevronDown,
+  CheckCircle2,
 } from "lucide-react";
 import {
   StatusPill,
@@ -122,6 +123,41 @@ function BookingCard({
           {b.segmentDistanceKm.toFixed(1)} km
         </span>
       </div>
+
+      {/* Pickup OTP — rider reads this to the driver at pickup */}
+      {b.status === "confirmed" && !b.otpVerified && (
+        <div
+          className="mt-3 flex items-center justify-between rounded-xl px-3 py-2.5"
+          style={{
+            background: "var(--color-go-glow)",
+            border: "1px dashed var(--color-go)",
+          }}
+        >
+          <span
+            className="text-xs font-semibold"
+            style={{ color: "var(--color-ink-muted)" }}
+          >
+            Pickup OTP — tell the driver
+          </span>
+          <span
+            className="font-display text-lg font-extrabold tracking-widest"
+            style={{ color: "var(--color-go)" }}
+          >
+            {b.otp}
+          </span>
+        </div>
+      )}
+      {b.status === "confirmed" && b.otpVerified && (
+        <div
+          className="mt-3 flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold"
+          style={{
+            background: "rgba(20,184,166,0.1)",
+            color: "var(--color-tide)",
+          }}
+        >
+          <CheckCircle2 size={13} /> Pickup verified
+        </div>
+      )}
 
       {/* Always-visible compact route line — truncated to one line each, keeps the
           card from feeling empty when collapsed, without the full address wrap */}

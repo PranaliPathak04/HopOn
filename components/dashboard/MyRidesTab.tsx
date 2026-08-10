@@ -36,8 +36,85 @@ interface Stop {
     phone: string;
     seatsBooked: number;
     bookingId: string;
+    otpVerified: boolean;
   }[];
   totalSeats: number;
+}
+
+// ─── OTP verify — driver types the code the rider read out loud ──────────────
+
+function OtpVerify({
+  bookingId,
+  verified,
+  onVerified,
+}: {
+  bookingId: string;
+  verified: boolean;
+  onVerified: (bookingId: string) => void;
+}) {
+  const [code, setCode] = useState("");
+  const [status, setStatus] = useState<"idle" | "checking" | "error">("idle");
+
+  async function submit() {
+    if (code.length !== 6) return;
+    setStatus("checking");
+    try {
+      const res = await fetch(`/api/bookings/${bookingId}/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ otp: code }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        onVerified(bookingId);
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    } finally {
+      setStatus((s) => (s === "checking" ? "idle" : s));
+    }
+  }
+
+  if (verified) {
+    return (
+      <span
+        className="flex items-center gap-1 text-[11px] font-semibold"
+        style={{ color: "var(--color-tide)" }}
+      >
+        Verified
+      </span>
+    );
+  }
+
+  return (
+    <span className="flex items-center gap-1">
+      <input
+        value={code}
+        onChange={(e) => {
+          setCode(e.target.value.replace(/\D/g, "").slice(0, 6));
+          setStatus("idle");
+        }}
+        placeholder="OTP"
+        inputMode="numeric"
+        className="w-16 rounded-md px-1.5 py-0.5 text-[11px] tracking-widest"
+        style={{
+          background: "var(--color-surface)",
+          border: `1px solid ${status === "error" ? "var(--color-spark)" : "var(--color-border)"}`,
+          color: "var(--color-ink)",
+        }}
+      />
+      <button
+        onClick={submit}
+        disabled={code.length !== 6 || status === "checking"}
+        className="rounded-md px-2 py-0.5 text-[11px] font-semibold disabled:opacity-40"
+        style={{ background: "var(--color-go)", color: "#0f0f0f" }}
+      >
+        {status === "checking" ? "…" : "Verify"}
+      </button>
+    </span>
+  );
 }
 
 // ─── Stops list — expandable per ride card ───────────────────────────────────
@@ -137,11 +214,11 @@ function StopsList({ rideId }: { rideId: string }) {
                           {stop.label ??
                             `${stop.latitude.toFixed(4)}, ${stop.longitude.toFixed(4)}`}
                         </p>
-                        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1">
+                        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1.5">
                           {stop.riders.map((r) => (
                             <span
                               key={r.bookingId}
-                              className="flex items-center gap-1 text-[11px]"
+                              className="flex items-center gap-1.5 text-[11px]"
                               style={{ color: "var(--color-ink-muted)" }}
                             >
                               <Users
@@ -152,12 +229,29 @@ function StopsList({ rideId }: { rideId: string }) {
                               {r.phone && (
                                 <a
                                   href={`tel:${r.phone}`}
-                                  className="ml-1"
                                   style={{ color: "var(--color-go)" }}
                                 >
                                   <Phone size={11} />
                                 </a>
                               )}
+                              <OtpVerify
+                                bookingId={r.bookingId}
+                                verified={r.otpVerified}
+                                onVerified={(id) =>
+                                  setStops((prev) =>
+                                    prev
+                                      ? prev.map((s) => ({
+                                          ...s,
+                                          riders: s.riders.map((rider) =>
+                                            rider.bookingId === id
+                                              ? { ...rider, otpVerified: true }
+                                              : rider,
+                                          ),
+                                        }))
+                                      : prev,
+                                  )
+                                }
+                              />
                             </span>
                           ))}
                         </div>

@@ -14,6 +14,8 @@ export interface BookingWithRide {
   fare: number;
   pickupLabel?: string | null;
   dropLabel?: string | null;
+  otp: string;
+  otpVerified: boolean;
   status: "confirmed" | "cancelled" | "completed";
   paymentStatus: "pending" | "paid" | "refunded";
   createdAt: string;

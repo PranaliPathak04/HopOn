@@ -75,6 +75,7 @@ export async function GET(
         phone: string;
         seatsBooked: number;
         bookingId: string;
+        otpVerified: boolean;
       }[];
       totalSeats: number;
     }
@@ -104,6 +105,7 @@ export async function GET(
       phone: rider?.phone ?? "",
       seatsBooked: b.seatsBooked,
       bookingId: b._id.toString(),
+      otpVerified: b.otpVerified ?? false,
     });
     stop.totalSeats += b.seatsBooked;
 
