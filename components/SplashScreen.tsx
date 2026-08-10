@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 
-const CAR_DURATION = 1.3; // seconds, car crossing the screen
+const CAR_DURATION = 2.0; // seconds, car crossing the screen
 const HOLD_AFTER = 0.6; // seconds to hold once car+text have landed
 
 export default function SplashScreen({
@@ -74,7 +74,7 @@ export default function SplashScreen({
               />
             </motion.div>
 
-            {/* wordmark — fades/slides up after the car has mostly passed */}
+            {/* wordmark — sits ABOVE the road line, appears once the car has mostly passed */}
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
@@ -83,7 +83,8 @@ export default function SplashScreen({
                 duration: 0.5,
                 ease: "easeOut",
               }}
-              className="relative mt-16 text-center"
+              className="absolute text-center"
+              style={{ bottom: "calc(50% + 30px)" }}
             >
               <h1
                 className="font-display text-4xl font-extrabold tracking-tight"
