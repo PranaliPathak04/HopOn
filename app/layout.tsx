@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, Inter } from "next/font/google";
 import Providers from "./providers";
+import SplashScreen from "@/components/SplashScreen";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -30,7 +31,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${archivo.variable} ${inter.variable}`}>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <SplashScreen>{children}</SplashScreen>
+        </Providers>
       </body>
     </html>
   );
