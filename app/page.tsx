@@ -504,9 +504,6 @@ export default async function Home() {
             >
               Offer a ride
             </Link>
-            <Link href="/login" className="hover:text-white transition-colors">
-              Log in
-            </Link>
           </div>
         </div>
       </footer>
