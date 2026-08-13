@@ -171,8 +171,8 @@ export default function DashboardPage() {
             </Link>
             <Link
               href="/publish"
-              className="btn-outline-tide flex items-center gap-1.5 px-4 py-1.5 text-sm"
-              style={{ color: "var(--color-tide)" }}
+              className="btn-outline flex items-center gap-1.5 px-4 py-1.5 text-sm"
+              style={{ color: "var(--color-go)" }}
             >
               <Plus size={14} /> Publish ride
             </Link>

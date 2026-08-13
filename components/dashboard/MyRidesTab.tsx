@@ -340,7 +340,7 @@ export default function MyRidesTab() {
             icon: <IndianRupee size={16} />,
             label: "Est. earnings",
             value: `₹${totalRevenue}`,
-            color: "var(--color-go)",
+            color: "var(--color-signal)",
           },
         ].map(({ icon, label, value, color }) => (
           <div
@@ -386,7 +386,7 @@ export default function MyRidesTab() {
             <div>
               <p
                 className="font-display font-bold"
-                style={{ color: "var(--color-ink)" }}
+                style={{ color: "var(--color-go)" }}
               >
                 {r.vehicle}
               </p>
@@ -513,7 +513,7 @@ export default function MyRidesTab() {
             >
               <motion.div
                 className="h-full rounded-full"
-                style={{ background: "var(--color-tide)" }}
+                style={{ background: "var(--color-ink)" }}
                 initial={{ width: 0 }}
                 animate={{
                   width: `${((r.seats - r.seatsAvailable) / r.seats) * 100}%`,
